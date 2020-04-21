@@ -9,10 +9,9 @@ import setRandomWeights from './functions/setRandomWeights.js';
 import forwardPropagate from './functions/forwardPropagate.js';
 import loadInputs from './functions/loadInputs.js';
 import Globals from './Globals.js'
+import createTextSprite from './functions/createTextSprite.js';
 import adjustWeightsAndBiases from './functions/adjustWeightsAndBiases.js';
 import backPropagation from './functions/mathFunctions/backPropagation.js';
-
-
 
 var lastLayerAmt = 0;
 
@@ -66,8 +65,7 @@ var renderer = new THREE.WebGLRenderer();
     //@ts-ignore
     camera.position.z = 20;
     
-var createLayers = ((nn_params, lastLayerAmtObj, main_nn_gui, scene)=>{
-
+    var createLayers = ((nn_params, lastLayerAmtObj, main_nn_gui, scene)=>{
 
     return(
         ()=>createLayersFunc(nn_params, lastLayerAmtObj, main_nn_gui, scene)
@@ -76,25 +74,34 @@ var createLayers = ((nn_params, lastLayerAmtObj, main_nn_gui, scene)=>{
 
 var deleteLayers = ((main_nn_gui, scene, lastLayerAmtObj, nn_params)=>{
 
-
     return(
         ()=>deleteLayersFunc(main_nn_gui, scene, lastLayerAmtObj, nn_params)
         )
 })(main_nn_gui, scene, lastLayerAmtObj, nn_params)
 
+const createWeightValue = (weightVal: any, position: object, scene: object)=>{
+        //@ts-ignore
+        scene.add(createTextSprite(`${ weightVal }`.substring(0, 4),
+            {
+                position,
+                text: 'weightValue',
+                weightValue: weightVal
+            }
+        , true));
 
+}
 
-var pseudoTrainingData = [
-    [6, 10, 16],
-    [3, 7, 10],
-    [9, 5, 14],
-    [1, 4, 5],
-    [2, 0, 2],
-    [4, 8, 12],
-    [3, 6, 9],
-    [5, 7, 12],
-    [0, 10, 10],
-]
+    var pseudoTrainingData = [
+        [6, 10, 16],
+        [3, 7, 10],
+        [9, 5, 14],
+        [1, 4, 5],
+        [2, 0, 2],
+        [4, 8, 12],
+        [3, 6, 9],
+        [5, 7, 12],
+        [0, 10, 10],
+    ]
 
 
     var train = {
@@ -102,9 +109,11 @@ var pseudoTrainingData = [
             console.log("Training Network");
 
             let learning_rate = 0.2;
+
             let z;
             let pred;
 
+            
             for(let i=0; i<=pseudoTrainingData.length-1; i++){
 
                 console.log("Current training data: ", pseudoTrainingData[i]);
@@ -117,25 +126,23 @@ var pseudoTrainingData = [
                         forwardPropagate(pseudoTrainingData[i], nn_params, weightsObj, scene, currentInputLayer);
                         z = Globals.zValues[i];
                         pred = Globals.predictionValues[i];
-
                     }
                     else{
 
-                        // console.log("outputValues: ", Globals);
-                        // console.log("w1: ", w1)
-                        // console.log("w2: ", w2)
-
                         //@ts-ignore
-                        // console.log("Weights: ", weightsObj.weightValues);
-                        // console.log("z: ", Globals.zValues[i])
-                        // console.log("pred: ", Globals.predictionValues[i])
-                        
+                        console.log("Weights: ", weightsObj.weightValues);
+                        console.log("z: ", Globals.zValues[i])
+                        console.log("pred: ", Globals.predictionValues[i])
+                                              
                         let target = pseudoTrainingData[i][2];
 
+                        
                         console.log("Initiating Back Prop!");
 
+                        //@ts-ignore
                         let gradientArray = backPropagation("squaredError", "sigmoid", pseudoTrainingData[i], weightsObj.weightValues, z, pred, target)
                         adjustWeightsAndBiases(learning_rate, scene, gradientArray);
+
 
                         if(i !== pseudoTrainingData.length -1){
                             //@ts-ignore
