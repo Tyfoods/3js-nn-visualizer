@@ -1,0 +1,23 @@
+{
+  "name": "nn-practice",
+  "version": "1.0.0",
+  "description": "",
+  "main": "webpack-config.js",
+  "dependencies": {
+    "@babel/plugin-proposal-optional-chaining": "^7.9.0",
+    "ts-loader": "^7.0.1",
+    "typescript": "^3.8.3"
+  },
+  "devDependencies": {
+    "@babel/core": "^7.9.0",
+    "@babel/preset-env": "^7.9.5",
+    "babel-loader": "^8.1.0",
+    "webpack": "^4.42.1",
+    "webpack-cli": "^3.3.11"
+  },
+  "scripts": {
+    "watch": "webpack --watch"
+  },
+  "author": "",
+  "license": "ISC"
+}
