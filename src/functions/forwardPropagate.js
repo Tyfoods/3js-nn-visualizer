@@ -39,7 +39,7 @@ export default (trainingData, nn_params, weightsObj, scene, currentInputLayer)=>
     // console.log("Previous layer neurons: ", previousLayerNeurons);
     // console.log("weights between layers: ", weightsBetweenLayers);
 
-    let Z = 0;
+    let dot_product = 0;
     // let bias = 10;
     //Below is the is of (each weight * Input)
     //I.E. Dot Product of the weight and input vectors between current and prev layer
@@ -60,18 +60,20 @@ export default (trainingData, nn_params, weightsObj, scene, currentInputLayer)=>
             }
         })
 
-        //find input associated with this weight.
+        //find input associated with this weight and calculate dot product
         previousLayerNeurons.forEach((input)=>{
             for (let [weightName, weightValue] of Object.entries(weightsAssociatedWithOutputNeuron)){
                 if( weightName.match(new RegExp(`${input.name.replace("neuron_", "")}`) )){
                     // console.log("weight Name: ", weightName);
                     // console.log("input name: ", input.name);
-                    console.log(`Calculation for Z component: ${weightValue} * ${input.value} + ${outputLayerNeuron.bias}`)
-                    Z += weightValue * input.value + outputLayerNeuron.bias
+                    console.log(`Calculation for Z component: ${weightValue} * ${input.value}/*  + ${outputLayerNeuron.bias} */`)
+                    dot_product += weightValue * input.value /* + outputLayerNeuron.bias */
                 }
             }
 
         })
+
+        let Z = dot_product + outputLayerNeuron.bias
 
         let outputValue = nn_params.setPredictionValue(sigmoidSquishification(Z));
 

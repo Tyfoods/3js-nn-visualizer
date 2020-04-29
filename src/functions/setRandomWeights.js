@@ -28,7 +28,7 @@ export default function setRandomWeights (weightsObj, scene){
             //  let weightVal = weightsObj.addWeightValues(getRndInteger(-1, 1));
             //  let weightVal = weightsObj.addWeightValues(Math.random()*.2-.1);
             let weightVal = weightsObj.weightValues[`${weightCenterCoord[3]}`] = (Math.random()*.2-.1);
-            console.log("Weight Value: ", weightVal);
+            // console.log("Weight Value: ", weightVal);
             // console.log("WeightID: ", weightCenterCoord[3])
             let parameters = {
                 text: `weightValue_${weightNumericID}`,
@@ -46,7 +46,7 @@ export default function setRandomWeights (weightsObj, scene){
             weightNumericID+=1;
     })
 
-    console.log("WEight values: ", weightsObj.weightValues);
+    // console.log("WEight values: ", weightsObj.weightValues);
 
 
 }
