@@ -1,12 +1,14 @@
 const deleteLayers = (main_nn_gui, scene, lastLayerAmtObj, nn_params)=>{
+    // console.log("Deleting layers");
     let numberOfChildrenInScene = scene.children.length;
     for (let i=0; i<numberOfChildrenInScene; i++){
         // console.log(scene.children[0]);
-        if(scene.children[0].name === 'neuron' ||
+        if(scene.children[0].name.match(/neuron_L\d+N\d+/g) ||
             scene.children[0].name === 'weight' ||
             scene.children[0].name === 'inputValue' ||
             scene.children[0].name === 'outputValue' ||
-            scene.children[0].name === 'weightValue'){
+            scene.children[0].name === 'graph' ||
+            scene.children[0].name.match(/weightValue_\d+/g) ){
             scene.remove(scene.children[0]);
         }
     }

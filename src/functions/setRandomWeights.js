@@ -1,11 +1,14 @@
 
 import createTextSprite from './createTextSprite.js';
+import getRndInteger from './mathFunctions/getRndInteger.js';
+
+
 
 export default function setRandomWeights (weightsObj, scene){
 
     let inputLayerWeightsCenter = [];
     let centerIterator = 0;
-    // console.log("weightsData: ", weightsObj.weightsData);
+    // console.log("Weight center coords: ", weightsObj.weightCenterCoords);
     scene.children.forEach((weight)=>{
         if(weight.name === 'weight' /* && !weight.position.x */){
             // console.log(`Weight ${centerIterator}: `, weightsObj.weightCenterCoords[`${centerIterator}`]);
@@ -14,15 +17,23 @@ export default function setRandomWeights (weightsObj, scene){
         }
     
     });
-    let weightID = 0;
-    inputLayerWeightsCenter.forEach(async (weightCenterCoord)=>{
-        // ((inputIterator)=>{
-            // console.log("Weight Center Coordinate: ", weightCenterCoord);
-            let weightVal = weightsObj.setWeightValues(Math.random());
+    let weightNumericID = 0;
 
+    inputLayerWeightsCenter.forEach((weightCenterCoord)=>{
+        // ((inputIterator)=>{
+            // console.log("Weight Center 3: ", weightCenterCoord[3]);
+
+
+            //  let weightVal = weightsObj.addWeightValues(Math.random());
+            //  let weightVal = weightsObj.addWeightValues(getRndInteger(-1, 1));
+            //  let weightVal = weightsObj.addWeightValues(Math.random()*.2-.1);
+            let weightVal = weightsObj.weightValues[`${weightCenterCoord[3]}`] = (Math.random()*.2-.1);
+            console.log("Weight Value: ", weightVal);
+            // console.log("WeightID: ", weightCenterCoord[3])
             let parameters = {
-                text: `weightValue_${weightID}`,
+                text: `weightValue_${weightNumericID}`,
                 weightValue: weightVal,
+                weightID: weightCenterCoord[3],
                 position: {
                     x: weightCenterCoord[0],
                     y: weightCenterCoord[1],
@@ -32,6 +43,10 @@ export default function setRandomWeights (weightsObj, scene){
             scene.add(createTextSprite(`${ weightVal }`.substring(0, 4), parameters));
 
     
-        weightID+=1;
+            weightNumericID+=1;
     })
+
+    console.log("WEight values: ", weightsObj.weightValues);
+
+
 }

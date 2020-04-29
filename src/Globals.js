@@ -1,10 +1,11 @@
 export default {
     zValues: [],
     predictionValues: [],
+    biasesObj: {},
     weightsObj: {
         weightValues: {},
         weightCenterCoords: {},
-        setWeightCenterCoords (value){
+        addWeightCenterCoords (value){
             let weightID = Object.keys(this.weightCenterCoords).length;
             // console.log("Weight ID: ", weightID);
             // console.log("Value: ", value);
@@ -12,7 +13,7 @@ export default {
             this.weightCenterCoords[`${weightID}`] = value;
             return;
         },
-        setWeightValues (value){
+        addWeightValues (value){
             let weightID = Object.keys(this.weightValues).length;
             // console.log("Weight ID: ", weightID);
             // console.log("Value: ", value);
@@ -24,5 +25,6 @@ export default {
             this.weightValues = value;
             return value;
         }
-    }
+    },
+    scene: null,
 }

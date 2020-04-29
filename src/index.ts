@@ -12,6 +12,7 @@ import Globals from './Globals.js'
 import createTextSprite from './functions/createTextSprite.js';
 import adjustWeightsAndBiases from './functions/adjustWeightsAndBiases.js';
 import backPropagation from './functions/mathFunctions/backPropagation.js';
+import createGraph from './functions/createGraph.js';
 
 var lastLayerAmt = 0;
 
@@ -31,11 +32,15 @@ var nn_params = {
 
     predictionValue: Number,
     zValue: Number,
-
+    iterations: 100,
     currentInputLayer: 1,
     currentOutputLayer: 2,
     layer_amt: 0,
     neuron_coordinates_per_layer: {
+    },
+    modifyNeuronCoordinatesPerLayer (value: any){
+        this.neuron_coordinates_per_layer = value;
+        return value;
     },
     setPredictionValue (value: any){
         // console.log("Setting Prediction Value");
@@ -52,6 +57,7 @@ var nn_params = {
 var main_nn_gui = new GUI({name: "Neural Network Parameters"});
 
 var scene = new THREE.Scene();
+Globals.scene = scene;
 var camera = new THREE.PerspectiveCamera( 100, window.innerWidth / window.innerHeight, 0.1, 1000 );
 
 var renderer = new THREE.WebGLRenderer();
@@ -65,7 +71,7 @@ var renderer = new THREE.WebGLRenderer();
     //@ts-ignore
     camera.position.z = 20;
     
-    var createLayers = ((nn_params, lastLayerAmtObj, main_nn_gui, scene)=>{
+var createLayers = ((nn_params, lastLayerAmtObj, main_nn_gui, scene)=>{
 
     return(
         ()=>createLayersFunc(nn_params, lastLayerAmtObj, main_nn_gui, scene)
@@ -91,87 +97,167 @@ const createWeightValue = (weightVal: any, position: object, scene: object)=>{
 
 }
 
+
+
+
+
+
     var pseudoTrainingData = [
-        [6, 10, 16],
-        [3, 7, 10],
-        [9, 5, 14],
-        [1, 4, 5],
-        [2, 0, 2],
-        [4, 8, 12],
-        [3, 6, 9],
-        [5, 7, 12],
-        [0, 10, 10],
+        [1, 1, 0],
+        [2, 1,   0],
+        [2, .5, 0],
+        [3,   1, 0],
+        [3, 1.5, 1],
+        [3.5,   .5, 1],
+        [4, 1.5, 1],
+        [5.5,   1,   1],
     ]
 
+    //example from JSfiddle - https://jsfiddle.net/wbkgb73v/
+
+    // createGraph(pseudoTrainingData, {
+    //     w1: 1.0482461236986302,
+    //     w2: -0.2898297774819612,
+    //     b: -3.026665877680458}
+    // );
+
+    // var pseudoTrainingData = [
+    //     [6, 10, 16],
+    //     [3, 7, 10],
+    //     [9, 5, 14],
+    //     [1, 4, 5],
+    //     [2, 0, 2],
+    //     [4, 8, 12],
+    //     [3, 6, 9],
+    //     [5, 7, 12],
+    //     [0, 10, 10],
+    // ]
+
+    // var currentInputLayer = 2;
+    let z: any;
+    let pred: any;
+    let inputLoaded: boolean;
+    // let i=0;
 
     var train = {
-        'Train': function (){
+        'Train': async function (){
             console.log("Training Network");
 
             let learning_rate = 0.2;
 
-            let z;
-            let pred;
 
-            
-            for(let i=0; i<=pseudoTrainingData.length-1; i++){
-
-                console.log("Current training data: ", pseudoTrainingData[i]);
-
-                loadInputs(pseudoTrainingData[i], nn_params, scene);
-                for (let currentInputLayer=2; currentInputLayer<=nn_params.layer_amt+1; currentInputLayer++){
-
-                    if(!(currentInputLayer > nn_params.layer_amt)){
-                        
-                        forwardPropagate(pseudoTrainingData[i], nn_params, weightsObj, scene, currentInputLayer);
-                        z = Globals.zValues[i];
-                        pred = Globals.predictionValues[i];
-                    }
-                    else{
-
-                        //@ts-ignore
-                        console.log("Weights: ", weightsObj.weightValues);
-                        console.log("z: ", Globals.zValues[i])
-                        console.log("pred: ", Globals.predictionValues[i])
-                                              
-                        let target = pseudoTrainingData[i][2];
-
-                        
-                        console.log("Initiating Back Prop!");
-
-                        //@ts-ignore
-                        let gradientArray = backPropagation("squaredError", "sigmoid", pseudoTrainingData[i], weightsObj.weightValues, z, pred, target)
-                        adjustWeightsAndBiases(learning_rate, scene, gradientArray);
-
-
-                        if(i !== pseudoTrainingData.length -1){
-                            //@ts-ignore
-                            scene.children.forEach((child)=>{
-                                if(child.name === 'inputValue'){
-                                    // console.log("Removing old inputs");
-                                    //@ts-ignore
-                                    scene.remove(child);
-                                }
-                            });
-                            //@ts-ignore
-                            scene.children.forEach((child)=>{
-                                if(child.name === 'outputValue'){
-                                    // console.log("Removing old outputs");
-                                    //@ts-ignore
-                                    scene.remove(child);
-                                }
-                            });
+            for (let currentIteration = 0; currentIteration<nn_params.iterations; currentIteration++){
+                // console.log("Starting Epoch number: ", currentEpoch);
+                console.log("Iteration number: ", currentIteration);
+                // for(let i=0; i<=pseudoTrainingData.length-1; i++){
+                    let i = Math.floor(Math.random() * pseudoTrainingData.length)
+                    console.log("Current training data: ", pseudoTrainingData[i]);
+    
+                    // if(!inputLoaded){
+                        loadInputs(pseudoTrainingData[i], nn_params, scene);
+                        // inputLoaded = true;
+    
+                    // }
+    
+                    for (let currentInputLayer=2; currentInputLayer<=nn_params.layer_amt+1; currentInputLayer++){
+                        // console.log("Current input layer: ", currentInputLayer);
+                        // console.log("layer amount: ", nn_params.layer_amt);
+                        // console.log("Initate backprop? ", (currentInputLayer > nn_params.layer_amt));
+                        if(!(currentInputLayer > nn_params.layer_amt)){
+                            
+                            forwardPropagate(pseudoTrainingData[i], nn_params, weightsObj, scene, currentInputLayer);
+                            z = Globals.zValues[0];
+                            pred = Globals.predictionValues[0];
+    
+                            // currentInputLayer+=1;
                         }
                         else{
-                            console.log("Training complete");
+                            // console.log("all z: ", Globals.zValues)
+                            // console.log("all pred: ", Globals.predictionValues)
+                            //@ts-ignore
+                            // console.log("Weights: ", weightsObj.weightValues);
+                            // console.log("current z: ", Globals.zValues[0])
+                            // console.log("current pred: ", Globals.predictionValues[0])
+                            
+    
+    
+                            console.log("Initiating Back Prop!");
+                            let target = pseudoTrainingData[i][2];
+                            // console.log("Cost: ", (pred - target) * (pred - target))
+    
+                            
+    
+                            //@ts-ignore
+                            let gradientArray = backPropagation(
+                                "squaredError",
+                                "sigmoid",
+                                pseudoTrainingData[i],
+                                weightsObj.weightValues,
+                                z,
+                                pred,
+                                target,
+                                nn_params,
+                                scene
+                                )
+                            adjustWeightsAndBiases(learning_rate, scene, gradientArray);
+    
+    
+                            //@ts-ignore
+                            // if(i !== parseInt(pseudoTrainingData.length)-1 ){
+
+                            //pause so we can see values changing
+                            await new Promise(r => setTimeout(r, .5));
+
+                            if(currentIteration === nn_params.iterations){
+                                //@ts-ignore
+                                scene.children.forEach((child)=>{
+                                    if(child.name === 'inputValue'){
+                                        console.log("Removing old inputs");
+                                        //@ts-ignore
+                                        scene.remove(child);
+                                    }
+                                });
+                                //@ts-ignore
+                                scene.children.forEach((child)=>{
+                                    if(child.name === 'outputValue'){
+                                        console.log("Removing old outputs");
+                                        //@ts-ignore
+                                        scene.remove(child);
+                                    }
+                                });
+                            }
+                            else{
+                                console.log("Iteration complete");
+                            }
+    
                         }
+                        // i+=1;
                     }
-                }
+                // }
             }
+            //@ts-ignore
+            console.log({
+                w1: Globals.weightsObj.weightValues['L1N0-L2N0'],
+                w2: Globals.weightsObj.weightValues['L1N1-L2N0'],
+                b: Globals.biasesObj['neuron_L2N0']
+            })
+            //@ts-ignore
+            createGraph(pseudoTrainingData, {
+                w1: Globals.weightsObj.weightValues['L1N0-L2N0'],
+                w2: Globals.weightsObj.weightValues['L1N1-L2N0'],
+                b: Globals.biasesObj['neuron_L2N0']}
+            );
+            console.log("Training complete");
         }
     };
     //@ts-ignore
     main_nn_gui.add(train,'Train');
+    
+    
+    //@ts-ignore
+    main_nn_gui.add( nn_params, 'iterations', ).onChange( function () {
+        console.log("Iterations: ", nn_params.iterations);
+    });
 
     var randomizeWeights = {
         'randomizeWeights': function (){
@@ -201,8 +287,9 @@ const createWeightValue = (weightVal: any, position: object, scene: object)=>{
     //@ts-ignore
     main_nn_gui.add( nn_params, 'layer_amt', ).onChange( function () {
         // console.log("Layer amt is: ", nn_params.layer_amt);
+
         if(nn_params.layer_amt === 0){
-            // console.log(`Deleting Layers
+            // console.log(`Deleting Layers`)
             //     currentLayerAmount: ${nn_params.layer_amt}
             //     lastLayerAmt: ${lastLayerAmt}`);
             // main__nn_gui.destroy();
@@ -210,7 +297,7 @@ const createWeightValue = (weightVal: any, position: object, scene: object)=>{
         }
         else if(nn_params.layer_amt && nn_params.layer_amt !== lastLayerAmt){
 
-            // console.log(`Updating layers
+            // console.log(`Updating layers`)
             //     currentLayerAmount: ${nn_params.layer_amt}
             //     lastLayerAmt: ${lastLayerAmt}`);
             deleteLayers();

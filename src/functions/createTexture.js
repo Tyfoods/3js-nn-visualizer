@@ -1,13 +1,14 @@
 
-import roundRect from './roundRect.js';
-import isObjEmpty from './isObjEmpty.js';
 import * as THREE from '../../three/build/three.module.js';
+import isObjEmpty from './isObjEmpty.js';
+import roundRect from './roundRect.js';
 
-function createTextSprite (message, parameters, recreating){
-    // let parameters;
-    // let message= weightsObj.setWeightValues(Math.random());
+const createTexture = (parameters, message)=>{
+ 
+
     let parametersIsEmpty;
     if ( isObjEmpty(parameters) ){
+        console.log("Parameters empty");
         parameters = {};
         parametersIsEmpty = true;
     }
@@ -19,6 +20,8 @@ function createTextSprite (message, parameters, recreating){
     var backgroundColor = parameters.hasOwnProperty("backgroundColor") ?parameters["backgroundColor"] : 'transparent' /* { r:255, g:255, b:255, a:1.0 } */;
     var textColor = parameters.hasOwnProperty("textColor") ?parameters["textColor"] : { r:255, g:255, b:255, a:1.0 };
 
+
+    
     var canvas = document.createElement('canvas');
     var size = 75;
     canvas.height = size;
@@ -48,26 +51,7 @@ function createTextSprite (message, parameters, recreating){
     var texture = new THREE.Texture(canvas) 
     texture.needsUpdate = true;
 
-    const material = new THREE.MeshBasicMaterial({
-        map: texture, 
-      });
-    var geometry = new THREE.BoxGeometry( 2.5, 2.5, 2.5 );
-
-    var sprite = new THREE.Mesh( geometry, material );
-
-    if(!parametersIsEmpty){
-        sprite.position.x = parameters.position.x;
-        sprite.position.y = (recreating ? parameters.position.y : parameters.position.y + 2);
-        sprite.position.z = parameters.position.z;
-        sprite.name = parameters.text;
-        sprite.weightValue = parameters.weightValue;
-        // ( parameters.weightID && ( ()=> console.log(parameters.weightID) )() )
-        sprite.weightID = (parameters.weightID && parameters.weightID);
-        sprite.inputValue = (parameters.inputValue && parameters.inputValue);
-    }
-  
-    // scene.add(sprite);
-    return sprite;  
+    return texture;
 }
 
-export default createTextSprite;
+export default createTexture;

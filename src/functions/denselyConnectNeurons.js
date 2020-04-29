@@ -10,15 +10,17 @@ import * as THREE from '../../three/build/three.module.js';
 
         var prev_layer_data;
         var first_layer_data;
-        for (let [layer_ID, layer_data] of Object.entries(nn_params.neuron_coordinates_per_layer)){
-            // console.log(`${layer_ID} data: `, layer_data);
+
+
+        for (let [layer_ID, current_layer_data] of Object.entries(nn_params.neuron_coordinates_per_layer)){
+            // console.log(`${layer_ID} data: `, current_layer_data);
             //For each neuron in the layer
             if(layer_ID === 'Layer 1' && typeof input_layer_data === 'undefined'){
-                first_layer_data = Object.values(layer_data);
+                first_layer_data = Object.values(current_layer_data);
             }
             else{
                 let input_layer_data;
-                for (let [neuron_ID, neuron_coords] of Object.entries(layer_data)){
+                for (let [neuron_ID, neuron_coords] of Object.entries(current_layer_data)){
                     
                     if(prev_layer_data){
                         input_layer_data = prev_layer_data;
@@ -34,11 +36,20 @@ import * as THREE from '../../three/build/three.module.js';
                         points.push(new THREE.Vector3(neuron_coords[0], neuron_coords[1], neuron_coords[2]));
                         points.push(new THREE.Vector3(input_layer_data[i][0], input_layer_data[i][1], input_layer_data[i][2]));
 
+                        let weightID = (()=>{
+                            let startingPoint = parseInt(layer_ID.replace("Layer ", "")) - 1;
+                            let endPoint = parseInt(layer_ID.replace("Layer ", ""));
+                            return `L${startingPoint}N${i}-L${endPoint}${neuron_ID}`
+
+                        })()
+
+
                         if(first_layer_data){
-                            weightsObj.setWeightCenterCoords([
+                            weightsObj.addWeightCenterCoords([
                                 (neuron_coords[0] + input_layer_data[i][0] / 2)/2,
                                 neuron_coords[1] + input_layer_data[i][1] / 2,
                                 neuron_coords[2] + input_layer_data[i][2] / 2,
+                                weightID,
                             ])
                         }
 
@@ -46,11 +57,18 @@ import * as THREE from '../../three/build/three.module.js';
                         var geometry = new THREE.BufferGeometry().setFromPoints( points );
                         var weight = new THREE.Line( geometry, material );
                         weight.name = 'weight';
+                        weight.weightID = weightID;
+
+                        // console.log("Layer ID before adding weight: ", layer_ID);
+                        // console.log("Neuron ID in current layer: ", i);
+                        // console.log("Previous layer ", input_layer_data);
+                        // console.log(`Current Layer Data: ${current_layer_data} layer number ${layer_ID}`);
+                        
                         scene.add( weight );
                     }
 
                 }
-                prev_layer_data = Object.values(layer_data);
+                prev_layer_data = Object.values(current_layer_data);
             }
         }
     }
