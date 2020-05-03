@@ -87,8 +87,8 @@ const calculate_gradients = (scene, mode, layer_amt, Dcost_Dactiv_X_Dactiv_Dz)=>
                     //Go through all gradients, and see if gradient matches the weight.
                     console.log("Gradients: ", gradients);
                     for (let [key, value] of Object.entries(gradients)){
-                        //ensure we don't include gradients for neuron biases, only weight gradients from previous layer
-                        if( ( !key.match('neuron_') && key.match(new RegExp(`L${layer_number}N\\d+-L\\d+N\\d+`)) ) &&(key.match(toNeuron) )){
+                        //ensure we only use weight gradients from previous layer - don't include gradients for neuron biases,
+                        if( ( !key.match('neuron_') && key.match(new RegExp(`L${layer_number}N\\d+-L${layer_number+1}N\\d+`)) ) &&(key.match(toNeuron) )){
                             console.log("Key: ", key);
                             console.log("Layer Number: ", layer_number-1);
 
