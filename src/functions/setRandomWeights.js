@@ -1,5 +1,5 @@
 
-import createTextSprite from './createTextSprite.js';
+import createCanvasTexturedBox from './createCanvasTexturedBox.js';
 import getRndInteger from './mathFunctions/getRndInteger.js';
 
 
@@ -40,7 +40,7 @@ export default function setRandomWeights (weightsObj, scene){
                     z: weightCenterCoord[2],
                 },
             }
-            scene.add(createTextSprite(`${ weightVal }`.substring(0, 4), parameters));
+            scene.add(createCanvasTexturedBox(`${ weightVal }`.substring(0, 4), parameters));
 
     
             weightNumericID+=1;

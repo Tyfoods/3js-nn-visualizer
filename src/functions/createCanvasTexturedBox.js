@@ -3,7 +3,7 @@ import roundRect from './roundRect.js';
 import isObjEmpty from './isObjEmpty.js';
 import * as THREE from '../../three/build/three.module.js';
 
-function createTextSprite (message, parameters, recreating){
+function createCanvasTexturedBox (message, parameters, recreating){
     // let parameters;
     // let message= weightsObj.setWeightValues(Math.random());
     let parametersIsEmpty;
@@ -70,4 +70,4 @@ function createTextSprite (message, parameters, recreating){
     return sprite;  
 }
 
-export default createTextSprite;
+export default createCanvasTexturedBox;

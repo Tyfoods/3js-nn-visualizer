@@ -9,6 +9,13 @@ let parameters ={};
 
 const createGraph = (trainingData, params)=>{
 
+    Globals.scene.children.forEach((child)=>{
+      if(child.name === 'graph'){
+        Globals.scene.remove(child);
+      }
+    });
+
+
     let graph_size = {width: 7, height: 7};
 
     let parametersIsEmpty;

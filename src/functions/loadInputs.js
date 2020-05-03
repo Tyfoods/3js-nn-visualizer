@@ -1,6 +1,6 @@
 
 import * as THREE from '../../three/build/three.module.js';
-import createTextSprite from './createTextSprite.js';
+import createCanvasTexturedBox from './createCanvasTexturedBox.js';
 import Globals from '../Globals.js';
 
 export default (trainingData, nn_params, scene)=>{
@@ -33,7 +33,7 @@ export default (trainingData, nn_params, scene)=>{
                 }
             });
 
-            scene.add(createTextSprite(`${(trainingData[inputIterator] ? trainingData[inputIterator] : '0')}`, {
+            scene.add(createCanvasTexturedBox(`${(trainingData[inputIterator] ? trainingData[inputIterator] : '0')}`, {
                 text: 'inputValue',
                 inputValue: (trainingData[inputIterator] ? trainingData[inputIterator] : '0'),
                 position: {

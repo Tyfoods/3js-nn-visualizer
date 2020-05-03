@@ -45,11 +45,11 @@ const adjustWeightsAndBiases = (learning_rate, scene, gradientArray)=>{
         }
         // console.log("Child name: ", child.name);
         if(child.name.match(/neuron_L\d+N\d+/g) && !child.name.match(/neuron_L1N\d+/g)){
-            console.log("Matched neuron: ", child.name);
+            // console.log("Matched neuron: ", child.name);
             Object.values(Globals.biasesObj).forEach((bias)=>{
                 if(parseFloat(child.bias) === bias){
                     //change bias accordingly
-                    console.log("Adjusting bias for: ", child.name);
+                    // console.log("Adjusting bias for: ", child.name);
                     let newBias = parseFloat(bias) - learning_rate * gradientArray[`${child.name}`];
                     child.bias = newBias;
                     Globals.biasesObj[`${child.name}`] = newBias;

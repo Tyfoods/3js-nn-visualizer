@@ -2,7 +2,7 @@
 import * as THREE from '../../three/build/three.module.js';
 import sigmoidSquishification from './mathFunctions/sigmoidSquishification.js';
 import Globals from '../Globals.js';
-import createTextSprite from './createTextSprite.js';
+import createCanvasTexturedBox from './createCanvasTexturedBox.js';
 
 export default (trainingData, nn_params, weightsObj, scene, currentInputLayer)=>{
     var inputIterator = 0;
@@ -91,7 +91,7 @@ export default (trainingData, nn_params, weightsObj, scene, currentInputLayer)=>
         Globals.zValues[0] = (nn_params.setZValue(Z));
         Globals.predictionValues[0] = (outputValue);
         
-        scene.add(createTextSprite(`${outputValue}`.substring(0,4), {
+        scene.add(createCanvasTexturedBox(`${outputValue}`.substring(0,4), {
             text: 'outputValue',
             position: {
                 x : outputLayerNeuron.position.x,
@@ -147,7 +147,7 @@ export default (trainingData, nn_params, weightsObj, scene, currentInputLayer)=>
     //         return sigmoidSquishification(Z);
     //     })();
 
-    //     scene.add(createTextSprite(`${inputValue}`.substring(0,4), {
+    //     scene.add(createCanvasTexturedBox(`${inputValue}`.substring(0,4), {
     //         text: 'outputValue',
     //         position: {
     //             x : inputLayerNeuron[0],

@@ -14,7 +14,7 @@ const calculate_gradients = (scene, mode, layer_amt, Dcost_Dactiv_X_Dactiv_Dz)=>
             const { weightID, weightValue } = child;
             // console.log("Weight Value: ", child);
             // weightValues.push({weightID, weightValue})
-            allWeights.push(weightID);
+            allWeights.push({weightID, weightValue});
         }
     })
     //seperate neurons into respective layers
@@ -31,22 +31,20 @@ const calculate_gradients = (scene, mode, layer_amt, Dcost_Dactiv_X_Dactiv_Dz)=>
         })
     }
     
-    // console.log("data by layer: ", dataByLayer);
     // console.log("Weights: ", allWeights);
     
     function DerivOfSigmoid (value){
-        return ( sigmoidSquishification(value) * 1-sigmoidSquishification(value) );
+        console.log("Value from deriv sigmoid: ", value);
+        return sigmoidSquishification(value) * (1-sigmoidSquishification(value));
     }
     
     let commonGradient = Dcost_Dactiv_X_Dactiv_Dz;
     let gradients = {};
     //depth of network
     let layer_number = layer_amt;
-    //start at second to last layer
+    
+    console.log("data by layer: ", dataByLayer);
     while(layer_number !== 0){
-        //get all weights in current layer
-        // console.log(`Computing gradients for ${layer_number-1}-L${layer_number}`);
-        // console.log("Layer : ", layer_number);
 
         //compute gradients for each bias
         for (let neuron of allNeurons){
@@ -62,45 +60,62 @@ const calculate_gradients = (scene, mode, layer_amt, Dcost_Dactiv_X_Dactiv_Dz)=>
 
         //compute gradients for each weight
         for (let weight of allWeights){
-            if(weight.match(new RegExp(`L${layer_number-1}N\\d+-L${layer_number}N\\d+`))){
+            if(weight.weightID.match(new RegExp(`L${layer_number-1}N\\d+-L${layer_number}N\\d+`))){
 
+                //Computes gradients for all weights in layer L-1 --> L, where L is last layer.
                 if(layer_number === layer_amt){
-                    let toNeuron = weight.slice(weight.indexOf('-')+1);
-                    let fromNeuron = weight.substring(0, weight.indexOf('-'));
+                    let toNeuron = weight.weightID.slice(weight.weightID.indexOf('-')+1);
+                    let fromNeuron = weight.weightID.substring(0, weight.weightID.indexOf('-'));
                     // console.log("ToNeuron: ", toNeuron);
-                    // console.log("fromNeuron: ", fromNeuron);
+                    console.log("fromNeuron: ", fromNeuron);
                     // console.log("Layer: ", layer_number);
                     // console.log("To neuron: ", toNeuron);
                     // console.log("From data by layer: ", dataByLayer[`layer_${layer_number}`][`neuron_${fromNeuron}`]);
                     // console.log("From Neuron: ", fromNeuron);
                     // console.log("data by layer: ", dataByLayer[`layer_${layer_number-1}`]);
-                    gradients[`${weight}`] = commonGradient * dataByLayer[`layer_${layer_number-1}`][`neuron_${fromNeuron}`].outputValue;
-                    // console.log("New Gradient: ", gradients[`${weight}`]);
+                    console.log("commonGradient for L-1 layer of weights: ", commonGradient);
+                    gradients[`${weight.weightID}`] = commonGradient * dataByLayer[`layer_${layer_number-1}`][`neuron_${fromNeuron}`].outputValue;
+                    // gradients[`${weight.weightID}`] = commonGradient * dataByLayer[`layer_${layer_number}`][`neuron_${toNeuron}`].outputValue;
+                    console.log(`Gradient for ${weight.weightID}: `, gradients[`${weight.weightID}`]);
                 }
+                //Computes gradients for weights L-X-1 --> L-X. (WORK IN PROGRESS)
                 else{
-                    let toNeuron = weight.slice(weight.indexOf('-')+1);
-                    let fromNeuron = weight.substring(0, weight.indexOf('-'));
-                    // console.log("ToNeuron: ", toNeuron);
-                    // console.log("fromNeuron: ", fromNeuron);
-                    // console.log(" L-X where X>1 weight layerData: ", dataByLayer )
-                    // console.log("More detail: ", dataByLayer[`layer_${layer_number}`]);
+                    let toNeuron = weight.weightID.slice(weight.weightID.indexOf('-')+1);
+                    let fromNeuron = weight.weightID.substring(0, weight.weightID.indexOf('-'));
+                    let fromNeuronObj = dataByLayer[`layer_${layer_number-1}`][`neuron_${fromNeuron}`];
+
+                    //Go through all gradients, and see if gradient matches the weight.
+                    console.log("Gradients: ", gradients);
                     for (let [key, value] of Object.entries(gradients)){
-                        // console.log("Key: ", key);
-                        if(key.match(toNeuron) || key.match(fromNeuron)){
-                            // console.log("To neuron data for L-X where X>1 weight: ", dataByLayer[`layer_${layer_number}`][`neuron_${toNeuron}`]);
-                            // console.log("Layer Number: ", layer_number);
-                            // console.log("To Neuron: ", toNeuron);
-                            // console.log("Layer: ", layer_number);
-                            // console.log("To neuron w/ text: ", `neuron_${toNeuron}`);
-                            // console.log(`
-                            //     commonGradient ${commonGradient} * 
-                            //     value ${value} * 
-                            //     DerivOfSigmoid ${DerivOfSigmoid(value)} *
-                            //     neuronOutputValue ${dataByLayer[`layer_${layer_number-1}`][`neuron_${fromNeuron}`].outputValue}`);
-                            // console.log("Data by layer: ", dataByLayer[`layer_${layer_number-1}`][`neuron_${fromNeuron}`].outputValue)
-                            // console.log("New Gradient: ", commonGradient * value * DerivOfSigmoid(value) * dataByLayer[`layer_${layer_number-1}`][`neuron_${fromNeuron}`].outputValue)
-                            gradients[`${weight}`] = commonGradient * value * DerivOfSigmoid(value) * dataByLayer[`layer_${layer_number-1}`][`neuron_${fromNeuron}`].outputValue;
-                            commonGradient = commonGradient * value * DerivOfSigmoid(value);
+                        //ensure we don't include gradients for neuron biases, only weight gradients from previous layer
+                        if( ( !key.match('neuron_') && key.match(new RegExp(`L${layer_number}N\\d+-L\\d+N\\d+`)) ) &&(key.match(toNeuron) )){
+                            console.log("Key: ", key);
+                            console.log("Layer Number: ", layer_number-1);
+
+                            console.log("fromNeuron: ", fromNeuron);
+                            console.log("Matched fromNeuron? ", !!key.match(fromNeuron));
+                            console.log("From neuron data: ", fromNeuronObj);
+
+
+
+                            let outputOfFromNeuron = fromNeuronObj.zValue || fromNeuronObj.outputValue;
+
+                            console.log(`
+                            value ${value} * 
+                            weightValue ${weight.weightValue} * 
+                            DerivOfSigmoid - outputOfFromNeuron ${DerivOfSigmoid(outputOfFromNeuron)} *
+                            outputOfFromNeuron ${outputOfFromNeuron}`);
+                            
+
+
+                            gradients[`${weight.weightID}`] = value * weight.weightValue * DerivOfSigmoid(outputOfFromNeuron) * outputOfFromNeuron
+
+
+                            console.log(`Gradient for ${weight.weightID}: `, gradients[`${weight.weightID}`]);
+
+                            // commonGradient = commonGradient * weight.weightValue * DerivOfSigmoid(outputOfFromNeuron);
+                            // commonGradient = commonGradient * value * DerivOfSigmoid(value);
+                            // commonGradient = commonGradient * value * DerivOfSigmoid(value);
                         }
                     }
                 }
