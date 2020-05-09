@@ -1,6 +1,6 @@
 
 
-import sigmoidSquishification from './sigmoidSquishification.js';
+import derivOfSigmoid from './derivOfSigmoid.js';
 // import calculate_DcostDweight_Array from './calculate_DcostDweight_Array.js';
 import calculate_gradients from './calculate_gradients.js';
 
@@ -20,7 +20,7 @@ const backPropagation = (costFunction, activationFunction, trainingData, weights
             Dcost_Dactiv = 2 * (pred - target);
         }
         if(activationFunction === 'sigmoid'){
-            Dactiv_Dz = sigmoidSquishification(z) * (1-sigmoidSquishification(z));
+            Dactiv_Dz = derivOfSigmoid(z);
         }
 
         // console.log("Dcost_Dactiv: ", Dcost_Dactiv);

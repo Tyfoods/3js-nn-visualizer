@@ -1,8 +1,12 @@
 
 import * as THREE from '../../three/build/three.module.js';
 import sigmoidSquishification from './mathFunctions/sigmoidSquishification.js';
+import derivOfSigmoid from './mathFunctions/derivOfSigmoid.js';
+
+
 import Globals from '../Globals.js';
 import createCanvasTexturedBox from './createCanvasTexturedBox.js';
+
 
 export default (trainingData, nn_params, weightsObj, scene, currentInputLayer)=>{
     var inputIterator = 0;
@@ -32,7 +36,6 @@ export default (trainingData, nn_params, weightsObj, scene, currentInputLayer)=>
             if(weightValue){
                 weightsBetweenLayers.push({name, weightValue});
             }
-
         }
     });
     // console.log("Current layer neurons: ", currentOutputLayer);
@@ -60,13 +63,22 @@ export default (trainingData, nn_params, weightsObj, scene, currentInputLayer)=>
             }
         })
 
+        let dZ_dW_obj = {}; //calculating derivative of z with respect to weight which is just equal to the input.value.
+        let dZ_dActivPrev_obj = {}; //calculating derivative of z with respective to activation of previous neuron which is just equal to the associated weightValue
+        let dZ_dBiasPrev_obj = {}; //calculating derivative of z with respect to bias of previous neuron which is just equal to 1
+
         //find input associated with this weight and calculate dot product
         previousLayerNeurons.forEach((input)=>{
             for (let [weightName, weightValue] of Object.entries(weightsAssociatedWithOutputNeuron)){
+                // console.log(`Weight: ${weightName} is associated with ${outputLayerNeuron.name}`)
+                // console.log("Prev layer neuron name: ", input.name)
                 if( weightName.match(new RegExp(`${input.name.replace("neuron_", "")}`) )){
                     // console.log("weight Name: ", weightName);
                     // console.log("input name: ", input.name);
-                    console.log(`Calculation for Z component: ${weightValue} * ${input.value}/*  + ${outputLayerNeuron.bias} */`)
+                    dZ_dW_obj[`${weightName}`] = input.value;
+                    dZ_dActivPrev_obj[`${weightName}`] = weightValue;
+                    dZ_dBiasPrev_obj[`${weightName}`] = 1;
+                    console.log(`Calculation for Z component: ${weightValue} * ${input.value} *  + ${outputLayerNeuron.bias}`)
                     dot_product += weightValue * input.value /* + outputLayerNeuron.bias */
                 }
             }
@@ -76,7 +88,16 @@ export default (trainingData, nn_params, weightsObj, scene, currentInputLayer)=>
         let Z = dot_product + outputLayerNeuron.bias
 
         let outputValue = nn_params.setPredictionValue(sigmoidSquishification(Z));
+        let dActiv_dZ = derivOfSigmoid(Z);
 
+       
+        console.log("dZ_dW_obj: ", dZ_dW_obj);
+        console.log("dZ_dActivPrev_obj: ", dZ_dActivPrev_obj);
+
+        outputLayerNeuron.child.dZ_dBiasPrev_obj = dZ_dBiasPrev_obj;
+        outputLayerNeuron.child.dZ_dActivPrev_obj = dZ_dActivPrev_obj;
+        outputLayerNeuron.child.dZ_dW_obj = dZ_dW_obj;
+        outputLayerNeuron.child.dActiv_dZ = dActiv_dZ;
         outputLayerNeuron.child.value = outputValue;
         outputLayerNeuron.child.zValue = Z;
         if(currentInputLayer !== nn_params.layer_amt){

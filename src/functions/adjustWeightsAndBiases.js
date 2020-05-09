@@ -49,8 +49,12 @@ const adjustWeightsAndBiases = (learning_rate, scene, gradientArray)=>{
             Object.values(Globals.biasesObj).forEach((bias)=>{
                 if(parseFloat(child.bias) === bias){
                     //change bias accordingly
-                    // console.log("Adjusting bias for: ", child.name);
+                    console.log("Adjusting bias for: ", child.name);
                     let newBias = parseFloat(bias) - learning_rate * gradientArray[`${child.name}`];
+                    console.log(`Calculation for new bias
+                        bias ${bias} - learning rate ${learning_rate} * gradient: ${gradientArray[`${child.name}`]}
+                    `)
+                    console.log("New bias is: ", newBias);
                     child.bias = newBias;
                     Globals.biasesObj[`${child.name}`] = newBias;
                 }

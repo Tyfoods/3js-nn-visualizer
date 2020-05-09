@@ -12,6 +12,7 @@ import Globals from './Globals.js'
 import createCanvasTexturedBox from './functions/createCanvasTexturedBox.js';
 import adjustWeightsAndBiases from './functions/adjustWeightsAndBiases.js';
 import backPropagation from './functions/mathFunctions/backPropagation.js';
+import backPropagationV2 from './functions/mathFunctions/backPropagationV2.js';
 import createGraph from './functions/createGraph.js';
 
 var lastLayerAmt = 0;
@@ -32,6 +33,8 @@ var nn_params = {
 
     predictionValue: Number,
     zValue: Number,
+    learning_rate: .2,
+    iterationSpeed: .5,
     iterations: 100,
     currentInputLayer: 1,
     currentOutputLayer: 2,
@@ -85,22 +88,15 @@ var deleteLayers = ((main_nn_gui, scene, lastLayerAmtObj, nn_params)=>{
         )
 })(main_nn_gui, scene, lastLayerAmtObj, nn_params)
 
-const createWeightValue = (weightVal: any, position: object, scene: object)=>{
-        //@ts-ignore
-        scene.add(createCanvasTexturedBox(`${ weightVal }`.substring(0, 4),
-            {
-                position,
-                text: 'weightValue',
-                weightValue: weightVal
-            }
-        , true));
 
-}
-
-
-
-
-
+// 1,1:0
+// 2,1:0
+// 2,.5:0
+// 3,1:0
+// 3, 1.5:1
+// 3.5,.5:1
+// 4, 1.5:1
+// 5.5,1:1
 
     var pseudoTrainingData = [
         [1, 1, 0],
@@ -115,12 +111,6 @@ const createWeightValue = (weightVal: any, position: object, scene: object)=>{
 
     //example from JSfiddle - https://jsfiddle.net/wbkgb73v/
 
-    // createGraph(pseudoTrainingData, {
-    //     w1: 1.0482461236986302,
-    //     w2: -0.2898297774819612,
-    //     b: -3.026665877680458}
-    // );
-
     // var pseudoTrainingData = [
     //     [6, 10, 16],
     //     [3, 7, 10],
@@ -133,6 +123,70 @@ const createWeightValue = (weightVal: any, position: object, scene: object)=>{
     //     [0, 10, 10],
     // ]
 
+
+    var Test = {
+        //@ts-ignore
+        'Test': async function (){
+            console.log("Testing Network");
+
+            let totalCost = 0;
+            
+            for (let currentIteration = 0; currentIteration<nn_params.iterations; currentIteration++){
+                
+                console.log("Iteration number: ", currentIteration);
+                
+                let i = Math.floor(Math.random() * pseudoTrainingData.length)
+                console.log("Current training data: ", pseudoTrainingData[i]);
+                
+                
+                loadInputs(pseudoTrainingData[i], nn_params, scene);
+                
+                
+                for (let currentInputLayer=2; currentInputLayer<nn_params.layer_amt+1; currentInputLayer++){
+                    
+                    forwardPropagate(pseudoTrainingData[i], nn_params, weightsObj, scene, currentInputLayer);
+                    let pred = Globals.predictionValues[0]
+                    let target = pseudoTrainingData[i][2];
+                    let cost = (pred - target) * (pred - target);
+                    totalCost += cost
+                    console.log("Cost: ", cost)
+
+                    
+
+
+                    //@ts-ignore
+                    await new Promise(r => setTimeout(r, nn_params.iterationSpeed));
+
+                    if(currentIteration === nn_params.iterations){
+                        //@ts-ignore
+                        scene.children.forEach((child)=>{
+                            if(child.name === 'inputValue'){
+                                // console.log("Removing old inputs");
+                                //@ts-ignore
+                                scene.remove(child);
+                            }
+                        });
+                        //@ts-ignore
+                        scene.children.forEach((child)=>{
+                            if(child.name === 'outputValue'){
+                                // console.log("Removing old outputs");
+                                //@ts-ignore
+                                scene.remove(child);
+                            }
+                        });
+                    }
+                }
+                console.log("Testing complete");
+                console.log("Average cost: ", totalCost/nn_params.iterations);
+            }
+            
+        }
+    };
+    
+    //@ts-ignore
+    main_nn_gui.add(Test,'Test');
+
+    
     // var currentInputLayer = 2;
     let z: any;
     let pred: any;
@@ -144,7 +198,7 @@ const createWeightValue = (weightVal: any, position: object, scene: object)=>{
         'Train': async function (){
             console.log("Training Network");
 
-            let learning_rate = 0.2;
+            let learning_rate = nn_params.learning_rate;
 
 
             for (let currentIteration = 0; currentIteration<nn_params.iterations; currentIteration++){
@@ -189,7 +243,8 @@ const createWeightValue = (weightVal: any, position: object, scene: object)=>{
                             
     
                             //@ts-ignore
-                            let gradientArray = backPropagation(
+                            // let gradientArray = backPropagation(
+                            let gradientArray = backPropagationV2(
                                 "squaredError",
                                 "sigmoid",
                                 pseudoTrainingData[i],
@@ -209,7 +264,7 @@ const createWeightValue = (weightVal: any, position: object, scene: object)=>{
                                 //pause so we can see values changing
                                 
                             //@ts-ignore
-                            await new Promise(r => setTimeout(r, .5));
+                            await new Promise(r => setTimeout(r, nn_params.iterationSpeed));
 
                             if(currentIteration === nn_params.iterations){
                                 //@ts-ignore
@@ -232,31 +287,34 @@ const createWeightValue = (weightVal: any, position: object, scene: object)=>{
                             else{
                                 console.log("Iteration complete");
                                             //@ts-ignore
-                                console.log({
+                                if(nn_params.layer_amt <= 2){
+
+                                    console.log({
+                                        //@ts-ignore
+                                        w1: Globals.weightsObj.weightValues['L1N0-L2N0'],
+                                        //@ts-ignore
+                                        w2: Globals.weightsObj.weightValues['L1N1-L2N0'],
+                                        //@ts-ignore
+                                        b: Globals.biasesObj['neuron_L2N0']
+                                    })
                                     //@ts-ignore
-                                    w1: Globals.weightsObj.weightValues['L1N0-L2N0'],
-                                    //@ts-ignore
-                                    w2: Globals.weightsObj.weightValues['L1N1-L2N0'],
-                                    //@ts-ignore
-                                    b: Globals.biasesObj['neuron_L2N0']
-                                })
-                                //@ts-ignore
-                                createGraph(pseudoTrainingData, {
-                                    //@ts-ignore
-                                    w1: Globals.weightsObj.weightValues['L1N0-L2N0'],
-                                    //@ts-ignore
-                                    w2: Globals.weightsObj.weightValues['L1N1-L2N0'],
-                                    //@ts-ignore
-                                    b: Globals.biasesObj['neuron_L2N0']}
-                                );
-                                console.log("Training complete");
+                                    createGraph(pseudoTrainingData, {
+                                        //@ts-ignore
+                                        w1: Globals.weightsObj.weightValues['L1N0-L2N0'],
+                                        //@ts-ignore
+                                        w2: Globals.weightsObj.weightValues['L1N1-L2N0'],
+                                        //@ts-ignore
+                                        b: Globals.biasesObj['neuron_L2N0']}
+                                    );
+                                }
                             }
-    
+                            
                         }
                         // i+=1;
                     }
-                // }
-            }
+                    // }
+                }
+                console.log("Training complete");
             // //@ts-ignore
             // console.log({
             //     //@ts-ignore
@@ -281,6 +339,15 @@ const createWeightValue = (weightVal: any, position: object, scene: object)=>{
     //@ts-ignore
     main_nn_gui.add(train,'Train');
     
+    //@ts-ignore
+    main_nn_gui.add( nn_params, 'learning_rate', ).onChange( function () {
+        console.log("Learning Rate: ", nn_params.learning_rate);
+    });
+    
+    //@ts-ignore
+    main_nn_gui.add( nn_params, 'iterationSpeed', ).onChange( function () {
+        console.log("Iteration speed: ", nn_params.iterationSpeed);
+    });
     
     //@ts-ignore
     main_nn_gui.add( nn_params, 'iterations', ).onChange( function () {
