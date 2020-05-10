@@ -15,6 +15,7 @@ import backPropagation from './functions/mathFunctions/backPropagation.js';
 import backPropagationV2 from './functions/mathFunctions/backPropagationV2.js';
 import createGraph from './functions/createGraph.js';
 import createTexture from './functions/createTexture.js';
+import isObjEmpty from './functions/isObjEmpty.js';
 
 var lastLayerAmt = 0;
 
@@ -34,6 +35,8 @@ var nn_params = {
 
     predictionValue: Number,
     zValue: Number,
+    areWeightsInitialized: false,
+    areNodesConnected: false,
     outputsLoaded: false,
     inputsLoaded: false,
     running: 0,
@@ -131,6 +134,17 @@ var deleteLayers = ((main_nn_gui, scene, lastLayerAmtObj, nn_params)=>{
     var Test = {
         //@ts-ignore
         'Test': async function (){
+
+            const {areWeightsInitialized, areNodesConnected} = nn_params;
+            if(!areWeightsInitialized){
+                alert("You must initialize weights first!");
+                return
+            }
+            if(!areNodesConnected){
+                alert("You must connect nodes first!");
+                return
+            }
+
             console.log("Testing Network");
 
             let totalCost = 0;
@@ -148,37 +162,22 @@ var deleteLayers = ((main_nn_gui, scene, lastLayerAmtObj, nn_params)=>{
                 
                 for (let currentInputLayer=2; currentInputLayer<nn_params.layer_amt+1; currentInputLayer++){
                     
-                    forwardPropagate(pseudoTrainingData[i], nn_params, weightsObj, scene, currentInputLayer);
-                    let pred = Globals.predictionValues[0]
-                    let target = pseudoTrainingData[i][2];
-                    let cost = (pred - target) * (pred - target);
-                    totalCost += cost
-                    console.log("Cost: ", cost)
 
-                    
-
-
-                    //@ts-ignore
-                    await new Promise(r => setTimeout(r, nn_params.iterationSpeed));
-
-                    // if(currentIteration === nn_params.iterations){
-                    //     //@ts-ignore
-                    //     scene.children.forEach((child)=>{
-                    //         if(child.name === 'inputValue'){
-                    //             // console.log("Removing old inputs");
-                    //             //@ts-ignore
-                    //             scene.remove(child);
-                    //         }
-                    //     });
-                    //     //@ts-ignore
-                    //     scene.children.forEach((child)=>{
-                    //         if(child.name === 'outputValue'){
-                    //             // console.log("Removing old outputs");
-                    //             //@ts-ignore
-                    //             scene.remove(child);
-                    //         }
-                    //     });
-                    // }
+                    if(!(currentInputLayer > nn_params.layer_amt)){
+                            
+                        forwardPropagate(pseudoTrainingData[i], nn_params, weightsObj, scene, currentInputLayer);
+                        let pred = Globals.predictionValues[0]
+                        let target = pseudoTrainingData[i][2];
+                        let cost = (pred - target) * (pred - target);
+                        totalCost += cost
+                        console.log("Cost: ", cost)
+                    }
+                    else{
+                        console.log("Outputs loaded");
+                        nn_params.outputsLoaded = true; 
+                        //@ts-ignore
+                        await new Promise(r => setTimeout(r, nn_params.iterationSpeed));
+                    }
                 }
             }
             console.log("Testing complete");
@@ -199,10 +198,20 @@ var deleteLayers = ((main_nn_gui, scene, lastLayerAmtObj, nn_params)=>{
     var train = {
         //@ts-ignore
         'Train': async function (){
+            
+            const {areWeightsInitialized, areNodesConnected} = nn_params;
+            if(!areWeightsInitialized){
+                alert("You must initialize weights first!");
+                return
+            }
+            if(!areNodesConnected){
+                alert("You must connect nodes first!");
+                return
+            }
             console.log("Training Network");
-
+            
             let learning_rate = nn_params.learning_rate;
-
+            
 
             for (let currentIteration = 0; currentIteration<nn_params.iterations; currentIteration++){
                 // console.log("Starting Epoch number: ", currentEpoch);
@@ -365,9 +374,16 @@ var deleteLayers = ((main_nn_gui, scene, lastLayerAmtObj, nn_params)=>{
 
     var randomizeWeights = {
         'randomizeWeights': function (){
+
+            if(!nn_params.areNodesConnected){
+                alert("You must connect nodes first!");
+                return;
+            }
+
             console.log("Setting weights");
             //SET RANDOM WEIGHTS
             setRandomWeights(weightsObj, scene);
+            nn_params.areWeightsInitialized = true;
         }
     }
     //@ts-ignore
@@ -378,9 +394,24 @@ var deleteLayers = ((main_nn_gui, scene, lastLayerAmtObj, nn_params)=>{
         'Densely Connect': ((nn_params, scene, weightsObj)=>{
             return(
                 ()=>{
-                    // console.log(nn_params);
+                    console.log(nn_params);
                     // console.log("scene: ", scene);
+                    if(isObjEmpty(nn_params.neuron_coordinates_per_layer)){
+                        alert("You must specify layer amount and neurons per layer!");
+                        return;
+                    }
+                    else{
+
+                        for (let [layerName, layerData] of Object.entries(nn_params.neuron_coordinates_per_layer)){
+                            if(isObjEmpty(layerData)){
+                                alert(`You must specify neurons for ${layerName}!`);
+                                return;
+                            }
+                        }
+                    }
                     denselyConnectNeurons(nn_params, scene, weightsObj);
+                    nn_params.areNodesConnected = true;
+                    
                 }
             )
         })(nn_params, scene, weightsObj)

@@ -13,6 +13,8 @@ const deleteLayers = (main_nn_gui, scene, lastLayerAmtObj, nn_params)=>{
         }
     }
 
+    nn_params.areNodesConnected = false;
+    nn_params.areWeightsInitialized = false;
     nn_params.inputsLoaded = false;
     nn_params.outputsLoaded = false;
     console.log("Inputs et all cleared");
