@@ -10,7 +10,7 @@ import createCanvasTexturedBox from './createCanvasTexturedBox.js';
 
 export default (trainingData, nn_params, weightsObj, scene, currentInputLayer)=>{
     var inputIterator = 0;
-    console.log(`Forward propagate step layer ${currentInputLayer-1} to ${currentInputLayer}`);
+    // console.log(`Forward propagate step layer ${currentInputLayer-1} to ${currentInputLayer}`);
     // console.log("Current layer: ", `Layer ${currentInputLayer}`);
     let inputLayerCoordsArray = Object.values(nn_params.neuron_coordinates_per_layer[`Layer ${currentInputLayer}`]);
     // console.log("Inputlayercoordsarray: ", inputLayerCoordsArray);
@@ -78,7 +78,7 @@ export default (trainingData, nn_params, weightsObj, scene, currentInputLayer)=>
                     dZ_dW_obj[`${weightName}`] = input.value;
                     dZ_dActivPrev_obj[`${weightName}`] = weightValue;
                     dZ_dBiasPrev_obj[`${weightName}`] = 1;
-                    console.log(`Calculation for Z component: ${weightValue} * ${input.value} *  + ${outputLayerNeuron.bias}`)
+                    // console.log(`Calculation for Z component: ${weightValue} * ${input.value} *  + ${outputLayerNeuron.bias}`)
                     dot_product += weightValue * input.value /* + outputLayerNeuron.bias */
                 }
             }
@@ -91,8 +91,8 @@ export default (trainingData, nn_params, weightsObj, scene, currentInputLayer)=>
         let dActiv_dZ = derivOfSigmoid(Z);
 
        
-        console.log("dZ_dW_obj: ", dZ_dW_obj);
-        console.log("dZ_dActivPrev_obj: ", dZ_dActivPrev_obj);
+        // console.log("dZ_dW_obj: ", dZ_dW_obj);
+        // console.log("dZ_dActivPrev_obj: ", dZ_dActivPrev_obj);
 
         outputLayerNeuron.child.dZ_dBiasPrev_obj = dZ_dBiasPrev_obj;
         outputLayerNeuron.child.dZ_dActivPrev_obj = dZ_dActivPrev_obj;
@@ -105,8 +105,8 @@ export default (trainingData, nn_params, weightsObj, scene, currentInputLayer)=>
             outputLayerNeuron.child.inputValue = outputValue;
         }
 
-        console.log("Z value: ", Z);
-        console.log("Output value: ", outputValue);
+        // console.log("Z value: ", Z);
+        // console.log("Output value: ", outputValue);
         // Globals.zValues.push(nn_params.setZValue(Z));
         // Globals.predictionValues.push(outputValue);
         Globals.zValues[0] = (nn_params.setZValue(Z));

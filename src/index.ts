@@ -133,10 +133,10 @@ var deleteLayers = ((main_nn_gui, scene, lastLayerAmtObj, nn_params)=>{
             
             for (let currentIteration = 0; currentIteration<nn_params.iterations; currentIteration++){
                 
-                console.log("Iteration number: ", currentIteration);
+                console.log("Testing Iteration number: ", currentIteration);
                 
                 let i = Math.floor(Math.random() * pseudoTrainingData.length)
-                console.log("Current training data: ", pseudoTrainingData[i]);
+                // console.log("Current training data: ", pseudoTrainingData[i]);
                 
                 
                 loadInputs(pseudoTrainingData[i], nn_params, scene);
@@ -176,9 +176,9 @@ var deleteLayers = ((main_nn_gui, scene, lastLayerAmtObj, nn_params)=>{
                         });
                     }
                 }
-                console.log("Testing complete");
-                console.log("Average cost: ", totalCost/nn_params.iterations);
             }
+            console.log("Testing complete");
+            console.log("Average cost: ", totalCost/nn_params.iterations);
             
         }
     };
@@ -203,10 +203,10 @@ var deleteLayers = ((main_nn_gui, scene, lastLayerAmtObj, nn_params)=>{
 
             for (let currentIteration = 0; currentIteration<nn_params.iterations; currentIteration++){
                 // console.log("Starting Epoch number: ", currentEpoch);
-                console.log("Iteration number: ", currentIteration);
+                console.log("Training Iteration number: ", currentIteration);
                 // for(let i=0; i<=pseudoTrainingData.length-1; i++){
                     let i = Math.floor(Math.random() * pseudoTrainingData.length)
-                    console.log("Current training data: ", pseudoTrainingData[i]);
+                    // console.log("Current training data: ", pseudoTrainingData[i]);
     
                     // if(!inputLoaded){
                         loadInputs(pseudoTrainingData[i], nn_params, scene);
@@ -236,7 +236,7 @@ var deleteLayers = ((main_nn_gui, scene, lastLayerAmtObj, nn_params)=>{
                             
     
     
-                            console.log("Initiating Back Prop!");
+                            // console.log("Initiating Back Prop!");
                             let target = pseudoTrainingData[i][2];
                             // console.log("Cost: ", (pred - target) * (pred - target))
     
@@ -270,7 +270,7 @@ var deleteLayers = ((main_nn_gui, scene, lastLayerAmtObj, nn_params)=>{
                                 //@ts-ignore
                                 scene.children.forEach((child)=>{
                                     if(child.name === 'inputValue'){
-                                        console.log("Removing old inputs");
+                                        // console.log("Removing old inputs");
                                         //@ts-ignore
                                         scene.remove(child);
                                     }
@@ -278,14 +278,14 @@ var deleteLayers = ((main_nn_gui, scene, lastLayerAmtObj, nn_params)=>{
                                 //@ts-ignore
                                 scene.children.forEach((child)=>{
                                     if(child.name === 'outputValue'){
-                                        console.log("Removing old outputs");
+                                        // console.log("Removing old outputs");
                                         //@ts-ignore
                                         scene.remove(child);
                                     }
                                 });
                             }
                             else{
-                                console.log("Iteration complete");
+                                // console.log("Iteration complete");
                                             //@ts-ignore
                                 if(nn_params.layer_amt <= 2){
 
