@@ -8,7 +8,7 @@ const createTexture = (parameters, message)=>{
 
     let parametersIsEmpty;
     if ( isObjEmpty(parameters) ){
-        console.log("Parameters empty");
+        // console.log("Parameters empty");
         parameters = {};
         parametersIsEmpty = true;
     }

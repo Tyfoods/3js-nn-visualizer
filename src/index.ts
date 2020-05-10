@@ -14,6 +14,7 @@ import adjustWeightsAndBiases from './functions/adjustWeightsAndBiases.js';
 import backPropagation from './functions/mathFunctions/backPropagation.js';
 import backPropagationV2 from './functions/mathFunctions/backPropagationV2.js';
 import createGraph from './functions/createGraph.js';
+import createTexture from './functions/createTexture.js';
 
 var lastLayerAmt = 0;
 
@@ -33,6 +34,9 @@ var nn_params = {
 
     predictionValue: Number,
     zValue: Number,
+    outputsLoaded: false,
+    inputsLoaded: false,
+    running: 0,
     learning_rate: .2,
     iterationSpeed: .5,
     iterations: 100,
@@ -157,24 +161,24 @@ var deleteLayers = ((main_nn_gui, scene, lastLayerAmtObj, nn_params)=>{
                     //@ts-ignore
                     await new Promise(r => setTimeout(r, nn_params.iterationSpeed));
 
-                    if(currentIteration === nn_params.iterations){
-                        //@ts-ignore
-                        scene.children.forEach((child)=>{
-                            if(child.name === 'inputValue'){
-                                // console.log("Removing old inputs");
-                                //@ts-ignore
-                                scene.remove(child);
-                            }
-                        });
-                        //@ts-ignore
-                        scene.children.forEach((child)=>{
-                            if(child.name === 'outputValue'){
-                                // console.log("Removing old outputs");
-                                //@ts-ignore
-                                scene.remove(child);
-                            }
-                        });
-                    }
+                    // if(currentIteration === nn_params.iterations){
+                    //     //@ts-ignore
+                    //     scene.children.forEach((child)=>{
+                    //         if(child.name === 'inputValue'){
+                    //             // console.log("Removing old inputs");
+                    //             //@ts-ignore
+                    //             scene.remove(child);
+                    //         }
+                    //     });
+                    //     //@ts-ignore
+                    //     scene.children.forEach((child)=>{
+                    //         if(child.name === 'outputValue'){
+                    //             // console.log("Removing old outputs");
+                    //             //@ts-ignore
+                    //             scene.remove(child);
+                    //         }
+                    //     });
+                    // }
                 }
             }
             console.log("Testing complete");
@@ -190,7 +194,6 @@ var deleteLayers = ((main_nn_gui, scene, lastLayerAmtObj, nn_params)=>{
     // var currentInputLayer = 2;
     let z: any;
     let pred: any;
-    let inputLoaded: boolean;
     // let i=0;
 
     var train = {
@@ -208,11 +211,8 @@ var deleteLayers = ((main_nn_gui, scene, lastLayerAmtObj, nn_params)=>{
                     let i = Math.floor(Math.random() * pseudoTrainingData.length)
                     // console.log("Current training data: ", pseudoTrainingData[i]);
     
-                    // if(!inputLoaded){
-                        loadInputs(pseudoTrainingData[i], nn_params, scene);
-                        // inputLoaded = true;
-    
-                    // }
+                    loadInputs(pseudoTrainingData[i], nn_params, scene);
+
     
                     for (let currentInputLayer=2; currentInputLayer<=nn_params.layer_amt+1; currentInputLayer++){
                         // console.log("Current input layer: ", currentInputLayer);
@@ -227,6 +227,9 @@ var deleteLayers = ((main_nn_gui, scene, lastLayerAmtObj, nn_params)=>{
                             // currentInputLayer+=1;
                         }
                         else{
+                            console.log("Outputs loaded");
+                            nn_params.outputsLoaded = true;  
+
                             // console.log("all z: ", Globals.zValues)
                             // console.log("all pred: ", Globals.predictionValues)
                             //@ts-ignore
@@ -263,40 +266,41 @@ var deleteLayers = ((main_nn_gui, scene, lastLayerAmtObj, nn_params)=>{
                                 
                                 //pause so we can see values changing
                                 
+                                await new Promise(r => setTimeout(r, nn_params.iterationSpeed));
+                                
+                                // if(currentIteration === nn_params.iterations){
+                                    //     //@ts-ignore
+                                    //     scene.children.forEach((child)=>{
+                                        //         if(child.name === 'inputValue'){
+                                            //             // console.log("Removing old inputs");
+                                            //             //@ts-ignore
+                                            //             scene.remove(child);
+                                            //         }
+                                            //     });
+                                            //     //@ts-ignore
+                                            //     scene.children.forEach((child)=>{
+                                                //         if(child.name === 'outputValue'){
+                                                    //             // console.log("Removing old outputs");
+                                                    //             //@ts-ignore
+                                                    //             scene.remove(child);
+                                                    //         }
+                                                    //     });
+                                                    // }
                             //@ts-ignore
-                            await new Promise(r => setTimeout(r, nn_params.iterationSpeed));
 
-                            if(currentIteration === nn_params.iterations){
-                                //@ts-ignore
-                                scene.children.forEach((child)=>{
-                                    if(child.name === 'inputValue'){
-                                        // console.log("Removing old inputs");
-                                        //@ts-ignore
-                                        scene.remove(child);
-                                    }
-                                });
-                                //@ts-ignore
-                                scene.children.forEach((child)=>{
-                                    if(child.name === 'outputValue'){
-                                        // console.log("Removing old outputs");
-                                        //@ts-ignore
-                                        scene.remove(child);
-                                    }
-                                });
-                            }
-                            else{
+                            if(!(currentIteration === nn_params.iterations)){
                                 // console.log("Iteration complete");
                                             //@ts-ignore
                                 if(nn_params.layer_amt <= 2){
 
-                                    console.log({
-                                        //@ts-ignore
-                                        w1: Globals.weightsObj.weightValues['L1N0-L2N0'],
-                                        //@ts-ignore
-                                        w2: Globals.weightsObj.weightValues['L1N1-L2N0'],
-                                        //@ts-ignore
-                                        b: Globals.biasesObj['neuron_L2N0']
-                                    })
+                                    // console.log({
+                                    //     //@ts-ignore
+                                    //     w1: Globals.weightsObj.weightValues['L1N0-L2N0'],
+                                    //     //@ts-ignore
+                                    //     w2: Globals.weightsObj.weightValues['L1N1-L2N0'],
+                                    //     //@ts-ignore
+                                    //     b: Globals.biasesObj['neuron_L2N0']
+                                    // })
                                     //@ts-ignore
                                     createGraph(pseudoTrainingData, {
                                         //@ts-ignore
@@ -353,6 +357,11 @@ var deleteLayers = ((main_nn_gui, scene, lastLayerAmtObj, nn_params)=>{
     main_nn_gui.add( nn_params, 'iterations', ).onChange( function () {
         console.log("Iterations: ", nn_params.iterations);
     });
+
+    //@ts-ignore
+    // main_nn_gui.add( nn_params, 'running', ).onChange( function () {
+    //     console.log("Running: ", nn_params.running);
+    // });
 
     var randomizeWeights = {
         'randomizeWeights': function (){
@@ -429,17 +438,40 @@ function render() {
     renderer.clear();
     renderer.render( scene, camera );
     // initText();
+
+    //GOAL: Animate textures on 3.js objects if running
+    //Turn on render for each step interation?
+
+
+    //Grab all weight/output objects
+    //Replace texture?
+
 }
 
+//Animation loop
 function animate() {
-
     requestAnimationFrame( animate );
+
+    // if(nn_params.running){
+    //     console.log("Running");
+    //     scene.children.forEach((child)=>{
+    //         if(child.name.match(/weightValue_\d+/g)){
+    //             let randomVal = Math.random();
+    //             // console.log("Child: ", child);
+    //             console.log("Random val", randomVal);
+    //             child.material.map = createTexture({}, `${randomVal}`);
+    //             child.material.needsUpdate = true;
+    //             // childObj.child.weightValue = Math.random();
+    //         }
+    //     })
+    // }
+
+
     render()
+    
     // renderer.render( scene, camera );
     
     controls.update();
     
 }
-// init();
-
 animate();

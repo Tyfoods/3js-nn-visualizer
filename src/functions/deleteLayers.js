@@ -13,6 +13,10 @@ const deleteLayers = (main_nn_gui, scene, lastLayerAmtObj, nn_params)=>{
         }
     }
 
+    nn_params.inputsLoaded = false;
+    nn_params.outputsLoaded = false;
+    console.log("Inputs et all cleared");
+
     // var neuronObj = scene.getObjectByName('neuron');
     // var weightObj = scene.getObjectByName('weight');
     // scene.remove( neuronObj );

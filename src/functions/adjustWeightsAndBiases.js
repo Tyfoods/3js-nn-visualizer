@@ -2,6 +2,7 @@
 
 import createWeightValue from './createWeightValue.js';
 import Globals from '../Globals.js'
+import createTexture from './createTexture.js';
 
 // var weightsObj = Globals.weightsObj;
 
@@ -16,7 +17,7 @@ const adjustWeightsAndBiases = (learning_rate, scene, gradientArray)=>{
     // console.log("Before adjusting, these are the weight values:", Globals.weightsObj.weightValues);
 
     // let looplabel = 0;
-    let weightValuesToRemove = [];
+    let weightsToUpdate = [];
     //@ts-ignore
     scene.children.forEach((child)=>{
         // console.log("Child: ", child);
@@ -36,10 +37,10 @@ const adjustWeightsAndBiases = (learning_rate, scene, gradientArray)=>{
                     // Globals.weightsObj.weightValues[`${incrementedWeightID}`] = newWeight;
                     Globals.weightsObj.weightValues[`${child.weightID}`] = newWeight;
                     // w1 = parseFloat(w1) - learning_rate * dcost_dw1;
-                    weightValuesToRemove.push(child);
                     // scene.remove(child);
-                    createWeightValue(newWeight, child.position, scene, incrementedWeightID, child.weightID);
-    
+                    
+                    //MODIFY TEXTURE OF WEIGHT!
+                    weightsToUpdate.push({child, newWeight});
                 }
             })
         }
@@ -68,9 +69,20 @@ const adjustWeightsAndBiases = (learning_rate, scene, gradientArray)=>{
 
     // console.log("Length of weights to remove: ", weightValuesToRemove.length)
     // console.log("weightvalues to remove: ", weightValuesToRemove);
-    weightValuesToRemove.forEach((child)=>{
-            //@ts-ignore
-            scene.remove(child);
+
+    //weights to modify/update
+    weightsToUpdate.forEach((childObj)=>{
+
+            const { child, newWeight } = childObj
+
+            //UPDATE TEXTURE/VALUE OF WEIGHT!
+            child.weightValue = newWeight;
+            child.material.map = createTexture({}, `${newWeight}`.substring(0, 4));
+            child.material.needsUpdate = true;
+
+            // scene.remove(child);
+
+
     })
 }
 

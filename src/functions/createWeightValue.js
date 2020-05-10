@@ -5,14 +5,18 @@ const createWeightValue = (weightVal, position, scene, incrementedWeightID, weig
     // console.log("Creating new weight");
     // console.log("Weight name: weightValue_", incrementedWeightID);
     // console.log("WeightID: ", weightID)
-    scene.add(createCanvasTexturedBox(`${ weightVal }`.substring(0, 4),
-        {
-            position,
-            text: `weightValue_${incrementedWeightID}`,
-            weightValue: weightVal,
-            weightID,
-        }
-    , true));
+
+    //Modify weight value instead?
+
+
+    // scene.add(createCanvasTexturedBox(`${ weightVal }`.substring(0, 4),
+    //     {
+    //         position,
+    //         text: `weightValue_${incrementedWeightID}`,
+    //         weightValue: weightVal,
+    //         weightID,
+    //     }
+    // , true));
 
 }
 

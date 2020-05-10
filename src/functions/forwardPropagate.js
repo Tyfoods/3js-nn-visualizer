@@ -6,6 +6,7 @@ import derivOfSigmoid from './mathFunctions/derivOfSigmoid.js';
 
 import Globals from '../Globals.js';
 import createCanvasTexturedBox from './createCanvasTexturedBox.js';
+import createTexture from './createTexture.js';
 
 
 export default (trainingData, nn_params, weightsObj, scene, currentInputLayer)=>{
@@ -38,7 +39,7 @@ export default (trainingData, nn_params, weightsObj, scene, currentInputLayer)=>
             }
         }
     });
-    // console.log("Current layer neurons: ", currentOutputLayer);
+    // console.log("Current output layer neurons: ", currentOutputLayer);
     // console.log("Previous layer neurons: ", previousLayerNeurons);
     // console.log("weights between layers: ", weightsBetweenLayers);
 
@@ -112,71 +113,41 @@ export default (trainingData, nn_params, weightsObj, scene, currentInputLayer)=>
         Globals.zValues[0] = (nn_params.setZValue(Z));
         Globals.predictionValues[0] = (outputValue);
         
-        scene.add(createCanvasTexturedBox(`${outputValue}`.substring(0,4), {
-            text: 'outputValue',
-            position: {
-                x : outputLayerNeuron.position.x,
-                y : outputLayerNeuron.position.y + 3,
-                z : outputLayerNeuron.position.z,
-            }
-        }))
+        // console.log("Output value normal: ", outputValue)
+        
+        if(!nn_params.outputsLoaded){
+            // console.log("Output value special: ", outputValue);
+            scene.add(createCanvasTexturedBox(`${outputValue}`.substring(0,4), {
+                text: 'outputValue',
+                position: {
+                    x : outputLayerNeuron.position.x,
+                    y : outputLayerNeuron.position.y + 3,
+                    z : outputLayerNeuron.position.z,
+                }
+            }))
+        }
+        else{
+            const {x, y, z} = outputLayerNeuron.position;
+
+            //Find output value to modify
+            scene.children.forEach((child)=>{
+                if(child.name === 'outputValue'){
+                    // console.log('outputLayerPosition: ', outputLayerNeuron.position);
+                    // console.log("Output value position: ", child.position);
+                    if( x === child.position.x &&
+                        y === child.position.y -5 &&
+                        z === child.position.z){
+                            // console.log(`${child.outputValue} becomes ${outputValue}`);
+                            child.outputValue = outputValue;
+                            child.material.map = createTexture({}, `${outputValue}`.substring(0, 4));
+                            child.material.needsUpdate = true;
+                            
+                    }
+                }
+            });
+        }
+
+  
 
     }
-            
-            
-            
-            //For each neuron in the "current inputLayer"
-    // for ( let inputLayerNeuron of inputLayerCoordsArray ){
-
-    //     console.log("Input layer neuron: ", inputLayerNeuron);
-
-    //     let inputValue = (()=>{
-    //         console.log(`Calculating output for neuron ${inputIterator} in layer ${currentInputLayer}`)
-    //         //Gets approriate weight for each neuron 
-    //         let weightIterator = (()=>{
-    //             if(inputIterator === 0){
-    //                 return 0;
-    //             }
-    //             else{
-    //                 return inputIterator * inputLayerCoordsArray.length;
-    //             }
-    //         })()
-
-    //         console.log("Weight Iterator: ", weightIterator);
-
-
-
-
-    //         //Summation of (each weight * Input)
-    //         //I.E. Dot Product of the weight and input vectors between current and prev layer
-    //         let Z = 0;
-    //         for (let i = weightIterator; i<= inputLayerCoordsArray.length; i++){
-    //             Z += weightsObj.weightValues[i] * trainingData[inputLayerCoordsArray];
-
-    //             console.log( `Weight: ${weightsObj.weightValues[i]}`);
-    //             console.log( `Input: ${trainingData[i]}`);
-    //         }
-    //         // console.log("Internal Z Value", Z);
-    //         // console.log("Internal Prediction Value", sigmoidSquishification(Z));
-    //         // Globals.zValue = Z;
-    //         // nn_params.setZValue(Z);
-    //         Globals.zValues.push(nn_params.setZValue(Z));
-    //         Globals.predictionValues.push(nn_params.setPredictionValue(sigmoidSquishification(Z)));
-    //         // nn_params.predictionValue = sigmoidSquishification(Z);
-
-    //         console.log("Sigmoid squishification: ", sigmoidSquishification(Z))
-    //         return sigmoidSquishification(Z);
-    //     })();
-
-    //     scene.add(createCanvasTexturedBox(`${inputValue}`.substring(0,4), {
-    //         text: 'outputValue',
-    //         position: {
-    //             x : inputLayerNeuron[0],
-    //             y : inputLayerNeuron[1] + 3,
-    //             z : inputLayerNeuron[2],
-    //         }
-    //     }))
-    //     inputIterator+=1;
-
-    // };
 }

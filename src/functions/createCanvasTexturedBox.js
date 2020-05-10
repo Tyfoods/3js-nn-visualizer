@@ -51,6 +51,8 @@ function createCanvasTexturedBox (message, parameters, recreating){
     const material = new THREE.MeshBasicMaterial({
         map: texture, 
       });
+    material.needsUpdate = true;
+
     var geometry = new THREE.BoxGeometry( 2.5, 2.5, 2.5 );
 
     var sprite = new THREE.Mesh( geometry, material );
