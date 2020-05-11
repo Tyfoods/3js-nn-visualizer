@@ -148,32 +148,43 @@ var deleteLayers = ((main_nn_gui, scene, lastLayerAmtObj, nn_params)=>{
             console.log("Testing Network");
 
             let totalCost = 0;
-            
+            let pred = Globals.predictionValues[0]
+
+
             for (let currentIteration = 0; currentIteration<nn_params.iterations; currentIteration++){
                 
                 console.log("Testing Iteration number: ", currentIteration);
                 
                 let i = Math.floor(Math.random() * pseudoTrainingData.length)
-                // console.log("Current training data: ", pseudoTrainingData[i]);
-                
+                let target = pseudoTrainingData[i][2];
                 
                 loadInputs(pseudoTrainingData[i], nn_params, scene);
                 
                 
-                for (let currentInputLayer=2; currentInputLayer<nn_params.layer_amt+1; currentInputLayer++){
+                for (let currentOutputLayerID=2; currentOutputLayerID<=nn_params.layer_amt+1; currentOutputLayerID++){
                     
 
-                    if(!(currentInputLayer > nn_params.layer_amt)){
+                    if(!(currentOutputLayerID > nn_params.layer_amt)){
                             
-                        forwardPropagate(pseudoTrainingData[i], nn_params, weightsObj, scene, currentInputLayer);
-                        let pred = Globals.predictionValues[0]
-                        let target = pseudoTrainingData[i][2];
-                        let cost = (pred - target) * (pred - target);
-                        totalCost += cost
-                        console.log("Cost: ", cost)
+                        forwardPropagate(pseudoTrainingData[i], nn_params, weightsObj, scene, currentOutputLayerID);
+                        pred = Globals.predictionValues[0]
+                        // let target = pseudoTrainingData[i][2];
+                        // let cost = (pred - target) * (pred - target);
+                        // totalCost += cost
+                        // console.log("Cost: ", cost)
                     }
                     else{
-                        console.log("Outputs loaded");
+                        
+                        let cost = (pred - target) * (pred - target);
+                        totalCost += cost
+                        console.log(
+                            `Input 1: ${pseudoTrainingData[i][0]}
+                            \nInput 2: ${pseudoTrainingData[i][1]}
+                            \nTarget: ${target}
+                            \nPrediction: ${pred}
+                            \nCost: ${cost}`
+                        );
+                        // console.log("Outputs loaded");
                         nn_params.outputsLoaded = true; 
                         //@ts-ignore
                         await new Promise(r => setTimeout(r, nn_params.iterationSpeed));
@@ -181,6 +192,8 @@ var deleteLayers = ((main_nn_gui, scene, lastLayerAmtObj, nn_params)=>{
                 }
             }
             console.log("Testing complete");
+            console.log(`Total cost: ${totalCost}
+            nn_params.iterations: ${nn_params.iterations}`);
             console.log("Average cost: ", totalCost/nn_params.iterations);
             
         }
@@ -379,6 +392,10 @@ var deleteLayers = ((main_nn_gui, scene, lastLayerAmtObj, nn_params)=>{
                 alert("You must connect nodes first!");
                 return;
             }
+            if(nn_params.areWeightsInitialized){
+                alert("Weights are already initialized!");
+                return;
+            }
 
             console.log("Setting weights");
             //SET RANDOM WEIGHTS
@@ -389,7 +406,7 @@ var deleteLayers = ((main_nn_gui, scene, lastLayerAmtObj, nn_params)=>{
     //@ts-ignore
     main_nn_gui.add(randomizeWeights,'randomizeWeights');
     
-
+    
     var denselyConnectObj = {
         'Densely Connect': ((nn_params, scene, weightsObj)=>{
             return(
@@ -400,8 +417,13 @@ var deleteLayers = ((main_nn_gui, scene, lastLayerAmtObj, nn_params)=>{
                         alert("You must specify layer amount and neurons per layer!");
                         return;
                     }
+                    if(nn_params.areNodesConnected){
+                        alert("Nodes are already densely connected");
+                        return;
+                    }
                     else{
-
+                        
+                        //@ts-ignore
                         for (let [layerName, layerData] of Object.entries(nn_params.neuron_coordinates_per_layer)){
                             if(isObjEmpty(layerData)){
                                 alert(`You must specify neurons for ${layerName}!`);

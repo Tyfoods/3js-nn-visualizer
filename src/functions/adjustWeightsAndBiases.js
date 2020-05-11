@@ -58,6 +58,7 @@ const adjustWeightsAndBiases = (learning_rate, scene, gradientArray)=>{
                     // console.log("New bias is: ", newBias);
                     child.bias = newBias;
                     Globals.biasesObj[`${child.name}`] = newBias;
+
                 }
             });
         }
@@ -69,7 +70,9 @@ const adjustWeightsAndBiases = (learning_rate, scene, gradientArray)=>{
 
     // console.log("Length of weights to remove: ", weightValuesToRemove.length)
     // console.log("weightvalues to remove: ", weightValuesToRemove);
-
+    // console.log("Weights to update: ", weightsToUpdate);
+    // console.log("BiasesObj: ", Globals.biasesObj);
+    
     //weights to modify/update
     weightsToUpdate.forEach((childObj)=>{
 

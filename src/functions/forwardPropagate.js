@@ -9,30 +9,30 @@ import createCanvasTexturedBox from './createCanvasTexturedBox.js';
 import createTexture from './createTexture.js';
 
 
-export default (trainingData, nn_params, weightsObj, scene, currentInputLayer)=>{
+export default (trainingData, nn_params, weightsObj, scene, currentOutputLayerID)=>{
     var inputIterator = 0;
-    // console.log(`Forward propagate step layer ${currentInputLayer-1} to ${currentInputLayer}`);
-    // console.log("Current layer: ", `Layer ${currentInputLayer}`);
-    let inputLayerCoordsArray = Object.values(nn_params.neuron_coordinates_per_layer[`Layer ${currentInputLayer}`]);
+    console.log(`Forward propagate step layer ${currentOutputLayerID-1} to ${currentOutputLayerID}`);
+    // console.log("Current layer: ", `Layer ${currentOutputLayerID}`);
+    let inputLayerCoordsArray = Object.values(nn_params.neuron_coordinates_per_layer[`Layer ${currentOutputLayerID}`]);
     // console.log("Inputlayercoordsarray: ", inputLayerCoordsArray);
     
 
     let weightsBetweenLayers = [];
     let previousLayerNeurons = [];
-    let currentOutputLayer = [];
+    let currentOutputLayers = [];
     scene.children.forEach((child)=>{
         //Get current output Layer Neuron info
-        if( child.name.match( new RegExp(`neuron_L${currentInputLayer}N\\d+`,'g') ) ){
+        if( child.name.match( new RegExp(`neuron_L${currentOutputLayerID}N\\d+`,'g') ) ){
             let {name, value, position, bias} = child;
-            currentOutputLayer.push({name, value, position, child, bias});
+            currentOutputLayers.push({name, value, position, child, bias});
         }
         //Get previous layer neuron info
-        if( child.name.match( new RegExp(`neuron_L${currentInputLayer-1}N\\d+`,'g') ) ){
+        if( child.name.match( new RegExp(`neuron_L${currentOutputLayerID-1}N\\d+`,'g') ) ){
             let {name, value, bias} = child;
             previousLayerNeurons.push({name, value, bias});
         }
         //get weights between layers
-        if( child.weightID && child.weightID.match( new RegExp(`L${currentInputLayer-1}N\\d+-L${currentInputLayer}N\\d+`,'g') ) ){
+        if( child.weightID && child.weightID.match( new RegExp(`L${currentOutputLayerID-1}N\\d+-L${currentOutputLayerID}N\\d+`,'g') ) ){
             let {weightID: name, weightValue} = child;
             if(weightValue){
                 weightsBetweenLayers.push({name, weightValue});
@@ -48,7 +48,7 @@ export default (trainingData, nn_params, weightsObj, scene, currentInputLayer)=>
     //Below is the is of (each weight * Input)
     //I.E. Dot Product of the weight and input vectors between current and prev layer
     //I.E. I.E. for each neuron in output layer I.E. current layer computer the output
-    for (let outputLayerNeuron of currentOutputLayer){
+    for (let outputLayerNeuron of currentOutputLayers){
         //All inputs will be multipled against weights associated with this input.
         //Therefore we loop through weights to find the weight associated with this neuron.
         let weightsAssociatedWithOutputNeuron = {}
@@ -101,7 +101,7 @@ export default (trainingData, nn_params, weightsObj, scene, currentInputLayer)=>
         outputLayerNeuron.child.dActiv_dZ = dActiv_dZ;
         outputLayerNeuron.child.value = outputValue;
         outputLayerNeuron.child.zValue = Z;
-        if(currentInputLayer !== nn_params.layer_amt){
+        if(currentOutputLayerID !== nn_params.layer_amt){
             // console.log("adding input value to ", outputLayerNeuron.child.name);
             outputLayerNeuron.child.inputValue = outputValue;
         }

@@ -141,7 +141,7 @@ const backPropagation = (costFunction, activationFunction, trainingData, weights
         }
         layer_number--;
     }
-    // console.log("Gradients: ", gradients);
+    console.log("Gradients: ", gradients);
     // console.log("Gradients for next layer of weights: ", gradientsForNextLayerOfWeights);
     return gradients;
 
