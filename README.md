@@ -1,7 +1,7 @@
 # 3js-nn-visualizer
 Visualize a simple feed forward neural network with arbitrary amount of hidden layers
 
-<img src="3js-nn-visualizer-screenshot.png" height="350">
+<img src="images/3js-nn-visualizer-screenshot.png" height="350">
 
 Hopefully, it's a pretty straight forward project to understand!
 
