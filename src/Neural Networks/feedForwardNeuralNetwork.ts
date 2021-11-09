@@ -252,7 +252,7 @@ class FeedForwardNeuralNetwork {
             });
         })(this)
     }
-
+    
     forwardPropagate(trainingData: number[]){
         let inputLayerId = 1
         let layerId: number;
