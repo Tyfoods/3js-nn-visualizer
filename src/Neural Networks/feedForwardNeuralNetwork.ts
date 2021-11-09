@@ -285,7 +285,7 @@ class FeedForwardNeuralNetwork {
     }
 
     //TODO: Take a closer look at promise/iteration speed.
-    //I'm just not sure it's working as desired
+    //I'm just not sure it's working as desired :|
 
     //@ts-ignore
     //Test the performance of the network by checking the accuracy when
