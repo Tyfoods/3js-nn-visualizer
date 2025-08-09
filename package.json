@@ -11,15 +11,15 @@
     "gpu.js": "^2.11.3",
     "mnist": "^1.1.0",
     "three": "^0.129.0",
-    "ts-loader": "^7.0.1",
+    "ts-loader": "^9.4.2",
     "typescript": "^3.8.3"
   },
   "devDependencies": {
     "@babel/core": "^7.9.0",
     "@babel/preset-env": "^7.9.5",
-    "babel-loader": "^8.1.0",
-    "webpack": "^4.42.1",
-    "webpack-cli": "^3.3.11"
+    "babel-loader": "^8.3.0",
+    "webpack": "^5.75.0",
+    "webpack-cli": "^5.0.1"
   },
   "scripts": {
     "dev": "nodemon index",
