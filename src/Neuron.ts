@@ -4,8 +4,7 @@ import getRndInteger from '../helpers/getRndInteger'
 import multiplyArrays from '../helpers/multiplyArrays'
 import sumValuesInArray from '../helpers/sumValuesInArray'
 import sigmoidSquishification from '../mathFunctions/sigmoidSquishification'
-import * as THREE from '../node_modules/three/build/three.module'
-
+import * as THREE from 'three';
 
 
 class Neuron {
@@ -122,6 +121,8 @@ class Neuron {
         }
 
         let outputDisplayBox = createCanvasTexturedBox(`${ output }`.substring(0, 4), parameters)
+        outputDisplayBox.material.map = createTexture({}, `${output}`.substring(0, 4));
+        outputDisplayBox.material.needsUpdate = true;
         this.scene.add(outputDisplayBox)
         this.outputDisplayBoxCreated = true
         this.outputDisplayBox = outputDisplayBox
@@ -193,12 +194,17 @@ class Neuron {
             }
 
             let weightDisplayBox = createCanvasTexturedBox(`${ weightVal }`.substring(0, 4), parameters)
-            weightDisplayBox.visible = weight.weight_object.visible
+            // weightDisplayBox.visible = weight.weight_object.visible
+            weightDisplayBox.visible = true
+            weightDisplayBox.material.map = createTexture({}, `${weightVal}`.substring(0, 4));
+            weightDisplayBox.material.needsUpdate = true;
 
             this.weight_objects[weight.weight_id]['weight_value'] = weightVal
             this.weight_objects[weight.weight_id]['weight_display_box'] = weightDisplayBox
      
-            if(weight.weight_object.visible) this.scene.add(weightDisplayBox);
+            this.scene.add(weightDisplayBox);
+            // if(weight.weight_object.visible) this.scene.add(weightDisplayBox);
+
         })
 
         let randInt = getRndInteger(0,2);

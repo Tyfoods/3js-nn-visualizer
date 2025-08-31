@@ -1,8 +1,7 @@
 //@ts-nocheck
 import isObjEmpty from '../helpers/isObjEmpty';
 import sigmoidSquishification from '../mathFunctions/sigmoidSquishification';
-import * as THREE from '../node_modules/three/build/three.module'
-
+import * as THREE from 'three';
 
 let parameters ={};
 

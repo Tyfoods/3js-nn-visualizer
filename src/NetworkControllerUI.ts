@@ -1,6 +1,6 @@
-// import { GUI } from '../../three/examples/jsm/libs/dat.gui.module.js';
-import { GUI } from '../node_modules/three/examples/jsm/libs/dat.gui.module'
-
+import Dat from 'dat.gui';
+import init from 'three-dat.gui'; // Import initialization method
+init(Dat); // Init three-dat.gui with Dat
 
 class NetworkControllerUI {
 
@@ -8,7 +8,7 @@ class NetworkControllerUI {
     networkObject: any
 
     constructor(networkObject: any){
-        this.main_nn_gui = new GUI({name: "Neural Network Parameters"});
+        this.main_nn_gui = new Dat.GUI({name: "Neural Network Parameters"});
         this.networkObject = networkObject
         console.log("Neural Network Controller UI rendered");
         this.setUpGui()

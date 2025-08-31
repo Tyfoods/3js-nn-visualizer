@@ -5,7 +5,7 @@ Visualize a simple feed forward neural network with arbitrary amount of hidden l
 
 Hopefully, it's a pretty straight forward project to understand!
 
-This project is for those who know javascript, but want to get into neural networks without learning a different language.
+This project is for those who know javascript/typescript, but want to get into neural networks without learning a different language.
 Additionally, at least for me, it's always neat to see what you're making visually!
 
 Here are resources I used to learn about neural networks:
@@ -13,25 +13,21 @@ https://docs.google.com/document/d/1EE_A1qRasCy7E73VVu_LoewYd4wRa9GtmbSlP5J9k7A/
 
 ## Getting Started
 
-1) Download and unzip the three.js library: https://github.com/mrdoob/three.js/archive/master.zip
+1) git clone https://github.com/Tyfoods/3js-nn-visualizer.git
 
-2) Place the three.js library folder in your top most directory (this is where the package.json is)
+2) Navigate to the folder containing the project
 
-3) From the top most directory run "npm install", to install typescript related modules.
-Run "npm run watch" if you want to modify the index.ts file (I will probably turn the whole thing into typescript, we'll see)
+3) From the top most folder (i.e. root directory), open terminal and run `npm install`
 
-4) To run this project I use Visual Studio Code Extension called "Live Server"
-Link: https://marketplace.visualstudio.com/items?itemName=ritwickdey.LiveServer
-
-It's a great way get this thing running fast.
+4) To run this project: Run `npm run dev`, which is accesible locally with this link - http://localhost:5173/ (5174, or 5175 etc... if port is already taken! Just check your logs after running `npm run dev` for the precise link)
 
 Contact me at ty@tyfoodsforthought.com if you want to reach out to me!
 
 ### Prerequisites
 
-1) Typescript- Node.JS
-2) Three.JS
-3) Live Server VScode Extension (Optional, but necessary for quick start)
+1) Typescript/Javscript Knowledge
+2) Node.JS
+3) Curiosity
 
 ## Authors
 

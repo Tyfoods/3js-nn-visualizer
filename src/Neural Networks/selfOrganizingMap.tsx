@@ -1,14 +1,16 @@
-import { GUI } from '../../node_modules/three/examples/jsm/libs/dat.gui.module'
-import * as THREE from '../../node_modules/three/build/three.module'
+import * as THREE from 'three';
 import calculateDifferenceBetweenTwoVectors from '../../mathFunctions/calculateDifferenceBetweenTwoVectors'
 import elementWiseOperationOnVector from '../../mathFunctions/elementWiseOperationOnVector'
 import calculateSumOfTwoVectors from '../../mathFunctions/calculateSumOfTwoVectors'
 import rgbToHex from '../../helpers/rgbToHex'
 import normalizeValuesInRanges from '../../mathFunctions/normalizeValuesInRanges'
 import calculateDistanceBetweenVectors from '../../mathFunctions/calculateDistanceBetweenVectors'
-import irisData from '../../irisData'
+import irisData from '../data/irisData'
 import getRndInteger from '../../helpers/getRndInteger'
 import rgbaToHex from '../../helpers/rgbaToHex'
+import Dat from 'dat.gui';
+import init from 'three-dat.gui'; // Import initialization method
+init(Dat); // Init three-dat.gui with Dat
 
 
 class SelfOrganizingMap {

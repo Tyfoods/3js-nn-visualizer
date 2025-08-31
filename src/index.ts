@@ -1,12 +1,9 @@
-// import * as THREE from '../js/three.module.js';
-
 import onWindowResize from '../helpers/onWindowResize';
-import * as THREE from '../node_modules/three/build/three.module'
+import * as THREE from 'three';
 import NetworkControllerUI from './NetworkControllerUI';
 import FeedForwardNeuralNetwork from './Neural Networks/feedForwardNeuralNetwork';
 import { PointerLockControls } from '../node_modules/three/examples/jsm/controls/PointerLockControls.js';
 import SelfOrganizingMap from './Neural Networks/selfOrganizingMap';
-
 
 var scene = new THREE.Scene();
 var NeuralNetwork = new FeedForwardNeuralNetwork(scene)

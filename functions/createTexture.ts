@@ -1,6 +1,6 @@
 
 import isObjEmpty from '../helpers/isObjEmpty';
-import * as THREE from '../node_modules/three/build/three.module'
+import * as THREE from 'three';
 import roundRect from './roundRect';
 
 const createTexture = (parameters: any, message: string)=>{
