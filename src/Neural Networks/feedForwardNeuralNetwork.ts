@@ -122,11 +122,28 @@ class FeedForwardNeuralNetwork {
     scene: any
     main_nn_gui: any
     nn_params: any
+    private guiParent?: HTMLElement
     // measurementChart: any;
     // measurementChartVisible: Boolean;
 
-    constructor(scene: any){
-        this.main_nn_gui = new Dat.GUI({name: "Neural Network Parameters"});
+    constructor(scene: any, guiParent?: HTMLElement){
+        this.guiParent = guiParent;
+        // Create a fresh GUI and attach it to the provided parent
+        this.main_nn_gui = new Dat.GUI({ name: "Neural Network Parameters", autoPlace: false });
+        if (this.guiParent) {
+            const el = this.main_nn_gui.domElement as HTMLElement;
+            el.style.position = 'absolute';
+            el.style.top = '10px';
+            el.style.right = '10px';
+            el.style.zIndex = '1000';
+            this.guiParent.appendChild(el);
+            console.log('[NN] GUI created and attached to container');
+        } else {
+            console.warn('[NN] No GUI parent provided; GUI will auto-attach to body');
+            // Fallback if no parent passed
+            this.main_nn_gui = new Dat.GUI({ name: "Neural Network Parameters" });
+        }
+
         this.scene = scene
         this.initParams()
         this.setUpGui()
@@ -870,6 +887,17 @@ class FeedForwardNeuralNetwork {
                 inputIterator+=1
             })
 
+        }
+    }
+
+    dispose() {
+        try {
+            if (this.main_nn_gui) {
+                console.log('[NN] Disposing GUI');
+                this.main_nn_gui.destroy();
+            }
+        } catch (e) {
+            console.warn('[NN] GUI dispose error:', e);
         }
     }
 }

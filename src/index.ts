@@ -2,7 +2,7 @@ import onWindowResize from '../helpers/onWindowResize';
 import * as THREE from 'three';
 import NetworkControllerUI from './NetworkControllerUI';
 import FeedForwardNeuralNetwork from './Neural Networks/feedForwardNeuralNetwork';
-import { PointerLockControls } from '../node_modules/three/examples/jsm/controls/PointerLockControls.js';
+import { PointerLockControls } from 'three/examples/jsm/controls/PointerLockControls.js';
 import SelfOrganizingMap from './Neural Networks/selfOrganizingMap';
 
 var scene = new THREE.Scene();
