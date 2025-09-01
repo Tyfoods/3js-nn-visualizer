@@ -45,7 +45,13 @@ export function init(container: HTMLElement) {
   const toggleMouseFromCamera = (e: KeyboardEvent) => {
     if (e.key === ' ') {
       e.preventDefault();
-      controls.isLocked ? controls.unlock() : controls.lock();
+      // Only lock if the canvas is still mounted & API exists
+      if (controls.isLocked) {
+        controls.unlock();
+      } else if (renderer.domElement.isConnected &&
+                 'requestPointerLock' in renderer.domElement) {
+        controls.lock();
+      }
     }
   };
   window.addEventListener('keydown', toggleMouseFromCamera, false);
@@ -65,6 +71,8 @@ export function init(container: HTMLElement) {
 
   const cleanup = () => {
     if (animationId) cancelAnimationFrame(animationId);
+    // Ensure we release pointer-lock before disposing controls
+    if (controls.isLocked) controls.unlock();
     window.removeEventListener('resize', handleResize);
     window.removeEventListener('keydown', toggleMouseFromCamera);
     controls.dispose();
