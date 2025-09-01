@@ -19,7 +19,8 @@ export function init(container: HTMLElement) {
 
   camera = new THREE.PerspectiveCamera(100, width / height, 0.1, 1000);
   camera.position.y = 2.5;
-  camera.position.z = 50;
+  camera.position.x = 10;
+  camera.position.z = 125;
 
   renderer = new THREE.WebGLRenderer({ antialias: true });
   renderer.setPixelRatio(window.devicePixelRatio);
