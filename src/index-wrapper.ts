@@ -1,6 +1,7 @@
 import * as THREE from 'three';
 import FeedForwardNeuralNetwork from './Neural Networks/feedForwardNeuralNetwork';
 import { PointerLockControls } from 'three/examples/jsm/controls/PointerLockControls.js';
+import { attachTouchControls } from './utils/touchControls';
 
 let scene: THREE.Scene;
 let camera: THREE.PerspectiveCamera;
@@ -25,6 +26,9 @@ export function init(container: HTMLElement) {
   renderer.setPixelRatio(window.devicePixelRatio);
   renderer.setSize(width, height);
   container.appendChild(renderer.domElement);
+
+  // Touch controls (swipe = pan, pinch = zoom)
+  const detachTouch = attachTouchControls(renderer.domElement, camera);
 
   // Pass container so GUI mounts inside it
   nn = new FeedForwardNeuralNetwork(scene, container);
@@ -71,10 +75,10 @@ export function init(container: HTMLElement) {
 
   const cleanup = () => {
     if (animationId) cancelAnimationFrame(animationId);
-    // Ensure we release pointer-lock before disposing controls
     if (controls.isLocked) controls.unlock();
     window.removeEventListener('resize', handleResize);
     window.removeEventListener('keydown', toggleMouseFromCamera);
+    detachTouch(); // remove touch listeners
     controls.dispose();
     renderer.dispose();
 

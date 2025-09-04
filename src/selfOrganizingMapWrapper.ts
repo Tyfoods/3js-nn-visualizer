@@ -1,6 +1,7 @@
 import * as THREE from 'three';
 import SelfOrganizingMap from './Neural Networks/selfOrganizingMap.ts';
 import { PointerLockControls } from 'three/examples/jsm/controls/PointerLockControls.js';
+import { attachTouchControls } from './utils/touchControls';
 
 let scene: THREE.Scene;
 let camera: THREE.PerspectiveCamera;
@@ -26,6 +27,9 @@ export function init(container: HTMLElement) {
   renderer.setPixelRatio(window.devicePixelRatio);
   renderer.setSize(width, height);
   container.appendChild(renderer.domElement);
+
+  // Touch controls (swipe = pan, pinch = zoom)
+  const detachTouch = attachTouchControls(renderer.domElement, camera);
 
   // Pass container so GUI mounts inside it
   nn = new SelfOrganizingMap(scene);
@@ -68,6 +72,7 @@ export function init(container: HTMLElement) {
     if (animationId) cancelAnimationFrame(animationId);
     window.removeEventListener('resize', handleResize);
     window.removeEventListener('keydown', toggleMouseFromCamera);
+    detachTouch(); // remove touch listeners
     controls.dispose();
     renderer.dispose();
 
