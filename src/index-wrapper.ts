@@ -27,8 +27,12 @@ export function init(container: HTMLElement) {
   renderer.setSize(width, height);
   container.appendChild(renderer.domElement);
 
-  // Touch controls (swipe = pan, pinch = zoom)
-  const detachTouch = attachTouchControls(renderer.domElement, camera);
+  // Touch controls (swipe=pan, two‑finger swipe=look around, pinch=zoom)
+  const detachTouch = attachTouchControls(renderer.domElement, camera, {
+    panScale: 0.25,
+    zoomScale: 0.15,
+    rotationScale: 0.004,
+  });
 
   // Pass container so GUI mounts inside it
   nn = new FeedForwardNeuralNetwork(scene, container);
