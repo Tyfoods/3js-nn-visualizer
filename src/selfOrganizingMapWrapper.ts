@@ -52,7 +52,7 @@ export function init(container: HTMLElement) {
   window.addEventListener('resize', handleResize);
 
   const toggleMouseFromCamera = (e: KeyboardEvent) => {
-    if (e.key === ' ') {
+    if (e.key === 'l' || e.key === 'L') {
       e.preventDefault();
       controls.isLocked ? controls.unlock() : controls.lock();
     }
@@ -69,6 +69,8 @@ export function init(container: HTMLElement) {
     if (keyboard.pressed('S')) camera.translateZ( move);
     if (keyboard.pressed('A')) camera.translateX(-move);
     if (keyboard.pressed('D')) camera.translateX( move);
+    if (keyboard.pressed(' ')) camera.translateY( move);
+    if (keyboard.pressed('SHIFT')) camera.translateY(-move);
     render();
   };
 
